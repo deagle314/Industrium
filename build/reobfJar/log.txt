@@ -138,6 +138,8 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/Industrium.class
   com/industrium/core/api/
   com/industrium/core/api/fluid/
+  com/industrium/core/api/fluid/FluidApi$CommonFluidContainer.class
+  com/industrium/core/api/fluid/FluidApi.class
   com/industrium/core/api/fluid/FluidState.class
   com/industrium/core/api/fluid/IFluidContainer.class
   com/industrium/core/api/fluid/IFluidProcessor.class
@@ -183,6 +185,18 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/common/block/RotationalMotorBlock.class
   com/industrium/core/common/block/ShaftBlock.class
   com/industrium/core/common/block/WarehouseBlock.class
+  com/industrium/core/common/fluid/
+  com/industrium/core/common/fluid/block/
+  com/industrium/core/common/fluid/block/BoilerBlock.class
+  com/industrium/core/common/fluid/block/CheckValveBlock.class
+  com/industrium/core/common/fluid/block/CondenserBlock.class
+  com/industrium/core/common/fluid/block/CopperPipeBlock.class
+  com/industrium/core/common/fluid/block/ElectricPumpBlock.class
+  com/industrium/core/common/fluid/block/FlowMeterBlock.class
+  com/industrium/core/common/fluid/block/FluidTankBlock.class
+  com/industrium/core/common/fluid/block/ManualValveBlock.class
+  com/industrium/core/common/fluid/block/MechanicalPumpBlock.class
+  com/industrium/core/common/fluid/block/SteelPipeBlock.class
   com/industrium/core/common/heat/
   com/industrium/core/common/heat/block/
   com/industrium/core/common/heat/block/CoalBurnerBlock.class
