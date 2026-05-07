@@ -151,6 +151,13 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/api/heat/IHeatContainer.class
   com/industrium/core/api/heat/IHeater.class
   com/industrium/core/api/heat/Temperature.class
+  com/industrium/core/api/info/
+  com/industrium/core/api/info/ControlSignal$SignalType.class
+  com/industrium/core/api/info/ControlSignal.class
+  com/industrium/core/api/info/IControllableMachine.class
+  com/industrium/core/api/info/IDataProvider.class
+  com/industrium/core/api/info/InfoApi$SimpleController.class
+  com/industrium/core/api/info/InfoApi.class
   com/industrium/core/api/logistics/
   com/industrium/core/api/logistics/IConveyorBelt.class
   com/industrium/core/api/logistics/IItemStorage.class
@@ -210,6 +217,18 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/common/heat/block/SteamBoilerBlock.class
   com/industrium/core/common/heat/block/ThermalBatteryBlock.class
   com/industrium/core/common/heat/block/WaterCoolerBlock.class
+  com/industrium/core/common/info/
+  com/industrium/core/common/info/block/
+  com/industrium/core/common/info/block/CentralConsoleBlock.class
+  com/industrium/core/common/info/block/EmergencyStopSwitchBlock.class
+  com/industrium/core/common/info/block/IndicatorLampBlock.class
+  com/industrium/core/common/info/block/NumericDisplayBlock.class
+  com/industrium/core/common/info/block/PowerSensorBlock.class
+  com/industrium/core/common/info/block/RelayBoxBlock.class
+  com/industrium/core/common/info/block/SignalCableBlock.class
+  com/industrium/core/common/info/block/TemperatureSensorBlock.class
+  com/industrium/core/common/info/block/ThresholdControllerBlock.class
+  com/industrium/core/common/info/block/TimerUnitBlock.class
   com/industrium/core/common/logistics/
   com/industrium/core/common/logistics/block/
   com/industrium/core/common/logistics/block/ConveyorBeltBlock.class
