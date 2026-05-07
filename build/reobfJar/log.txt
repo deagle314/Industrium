@@ -155,6 +155,8 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/api/logistics/IConveyorBelt.class
   com/industrium/core/api/logistics/IItemStorage.class
   com/industrium/core/api/logistics/ItemPriority.class
+  com/industrium/core/api/logistics/LogisticsApi$CommonItemStorage.class
+  com/industrium/core/api/logistics/LogisticsApi.class
   com/industrium/core/api/power/
   com/industrium/core/api/power/IEnergyConsumer.class
   com/industrium/core/api/power/IEnergyStorage.class
@@ -208,6 +210,18 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/common/heat/block/SteamBoilerBlock.class
   com/industrium/core/common/heat/block/ThermalBatteryBlock.class
   com/industrium/core/common/heat/block/WaterCoolerBlock.class
+  com/industrium/core/common/logistics/
+  com/industrium/core/common/logistics/block/
+  com/industrium/core/common/logistics/block/ConveyorBeltBlock.class
+  com/industrium/core/common/logistics/block/CrateBlock.class
+  com/industrium/core/common/logistics/block/FastConveyorBeltBlock.class
+  com/industrium/core/common/logistics/block/LoaderBlock.class
+  com/industrium/core/common/logistics/block/MergerBlock.class
+  com/industrium/core/common/logistics/block/SmartSorterBlock.class
+  com/industrium/core/common/logistics/block/SplitterBlock.class
+  com/industrium/core/common/logistics/block/UnloaderBlock.class
+  com/industrium/core/common/logistics/block/VerticalChuteBlock.class
+  com/industrium/core/common/logistics/block/WarehouseBinBlock.class
   com/industrium/core/common/power/
   com/industrium/core/common/power/block/
   com/industrium/core/common/power/block/BatteryBoxBlock.class
