@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Specification-Title: industrium
+Specification-Vendor: industrium
+Specification-Version: 1
+Mod-Type: FML
+Mod-Version: 1.0.0
+ForceNonExtension: true
+

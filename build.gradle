@@ -1,0 +1,75 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)' apply false
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+
+version = '1.0.0'
+group = 'com.industrium'
+archivesBaseName = 'industrium'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+    
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    copyIdeResources = true
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemapFile', '${json_file}'
+            property 'mixin.env.incompatibleRemapFile', '${json_file}'
+        }
+
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemapFile', '${json_file}'
+            property 'mixin.env.incompatibleRemapFile', '${json_file}'
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
+    
+    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    implementation 'com.google.guava:guava:32.1.3-jre'
+    runtimeOnly 'org.apache.logging.log4j:log4j-core:2.20.0'
+    
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title'     : 'industrium',
+            'Specification-Vendor'  : 'industrium',
+            'Specification-Version'  : '1',
+            'Mod-Type'             : 'FML',
+            'Mod-Version'         : '1.0.0',
+            'ForceNonExtension'    : 'true'
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

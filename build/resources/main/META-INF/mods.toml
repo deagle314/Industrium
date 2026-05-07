@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[47,48)"
+license="All Rights Reserved"
+modId="industrium"
+version="1.0.0"
+group="com.industrium"
+url="https://industrium.com"
+updateJSON="https://industrium.com/update.json"
+
+[[dependencies.industrium]]
+modId="forge"
+versionRange="[47,48)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.industrium]]
+modId="minecraft"
+versionRange="[1.20.1,1.20.2)"
+ordering="AFTER"
+side="BOTH"
