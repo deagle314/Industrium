@@ -1,0 +1,16 @@
+package com.industrium.core.common.rotation.block;
+
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+
+/**
+ * Mechanical Pump - rotational powered fluid pump.
+ */
+public class MechanicalPumpBlock extends Block {
+    
+    public MechanicalPumpBlock() {
+        super(Block.Properties.of()
+            .strength(2.5f, 10.0f)
+            .sound(SoundType.METAL));
+    }
+}
