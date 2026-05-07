@@ -16,21 +16,21 @@ public final class PowerApi {
     
     /**
      * Creates a new energy storage capability for the given voltage tier.
-     * 
-     * @param tier The voltage tier
-     * @param capacity The capacity multiplier (1 = baseline tier capacity)
-     * @return New energy storage instance
+     * Uses tier transfer rate as baseline capacity.
      */
-    public static IEnergyStorage createStorage(VoltageTier tier, int capacity) {
-        return new CommonEnergyStorage(tier, tier.getCapacity() * capacity);
+    public static IEnergyStorage createStorage(VoltageTier tier) {
+        return new CommonEnergyStorage(tier, tier.getTransferRate() * 10);
+    }
+    
+    /**
+     * Creates a new energy storage with custom capacity.
+     */
+    public static IEnergyStorage createStorage(VoltageTier tier, long capacity) {
+        return new CommonEnergyStorage(tier, capacity);
     }
     
     /**
      * Gets a validator for checking voltage compatibility.
-     * 
-     * @param source Source tier
-     * @param target Target tier
-     * @return Compatibility result
      */
     public static VoltageCompatibility checkCompatibility(VoltageTier source, VoltageTier target) {
         if (source == target) {
@@ -38,18 +38,16 @@ public final class PowerApi {
         }
         int tierDiff = target.ordinal() - source.ordinal();
         if (tierDiff > 0) {
-            return VoltageCompatibility.DOWNGRADE;
+            return VoltageCompatibility.STEP_UP;
         }
         return VoltageCompatibility.UPSURGE_RISK;
     }
     
     /**
-     * Gets the energy loss multiplier for transmission.
-     * 
-     * @param distanceBlocks Distance in blocks
-     * @return Loss multiplier (1.0 = no loss)
+     * Gets the energy loss factor for transmission over distance.
+     * Default 0.1% per block.
      */
-    public static double getEnergyLoss(int distanceBlocks) {
+    public static double getEnergyLossFactor(int distanceBlocks) {
         if (distanceBlocks <= 0) return 1.0;
         return Math.max(0.1, 1.0 - (distanceBlocks * 0.001));
     }
@@ -60,9 +58,9 @@ public final class PowerApi {
     public enum VoltageCompatibility {
         /** Tiers match - no conversion needed */
         COMPATIBLE,
-        /** Target is higher - may cause undervoltage */
-        DOWNGRADE,
-        /** Target is lower - UPSURGE risk, may damage equipment */
+        /** Target is higher - safe step up */
+        STEP_UP,
+        /** Target is lower - risk of damage */
         UPSURGE_RISK,
         /** Incompatible - can damage equipment */
         INCOMPATIBLE
@@ -117,7 +115,7 @@ public final class PowerApi {
         
         @Override
         public long getTransferRate() {
-            return tier.getCapacity() / 10;
+            return tier.getTransferRate();
         }
     }
 }

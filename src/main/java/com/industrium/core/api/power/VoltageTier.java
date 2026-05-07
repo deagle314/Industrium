@@ -3,80 +3,82 @@ package com.industrium.core.api.power;
 /**
  * Represents the different voltage tiers in the Industrium power system.
  * 
- * Each tier has a maximum energy capacity and defines what machines can operate at that voltage.
- * Higher tiers can generally handle more power but may damage lower-tier equipment.
+ * Each tier represents the safe transfer class in FE/t (Energy per tick).
+ * Higher tiers can transmit more power but may damage lower-tier equipment.
+ * 
+ * LV: 10 FE/t - starter machines, lamps, small motors
+ * MV: 1,000 FE/t - factories, processing lines
+ * HV: 10,000 FE/t - steel mills, rail power
+ * EHV: 1,000,000 FE/t - megabases, long distance backbone
  */
 public enum VoltageTier {
-    /**
-     * Low Voltage - 10 FE baseline capacity.
-     * Basic machines and components.
-     */
+    /** Low Voltage - 10 FE/t baseline */
     LV(10, "low"),
     
-    /**
-     * Medium Voltage - 100 FE capacity.
-     * Intermediate industrial machinery.
-     */
-    MV(100, "medium"),
+    /** Medium Voltage - 1,000 FE/t */
+    MV(1000, "medium"),
     
-    /**
-     * High Voltage - 1000 FE capacity.
-     * Heavy industrial and advanced machinery.
-     */
-    HV(1000, "high"),
+    /** High Voltage - 10,000 FE/t */
+    HV(10000, "high"),
     
-    /**
-     * Extreme High Voltage - 10000 FE capacity.
-     * Maximum power industrial systems.
-     */
-    EHV(10000, "extreme");
+    /** Extreme High Voltage - 1,000,000 FE/t */
+    EHV(1000000, "extreme");
     
-    private final long capacity;
+    private final long transferRate;
     private final String name;
     
-    VoltageTier(long capacity, String name) {
-        this.capacity = capacity;
+    VoltageTier(long transferRate, String name) {
+        this.transferRate = transferRate;
         this.name = name;
     }
     
     /**
-     * Gets the maximum energy capacity for this voltage tier.
-     * 
-     * @return Maximum FE capacity
+     * Gets the maximum safe transfer rate for this voltage tier in FE/t.
      */
-    public long getCapacity() {
-        return capacity;
+    public long getTransferRate() {
+        return transferRate;
     }
     
     /**
      * Gets the human-readable name of this tier.
-     * 
-     * @return Tier name
      */
     public String getName() {
         return name;
     }
     
     /**
-     * Checks if this tier can accept energy from the given tier without conversion loss.
-     * 
-     * @param other The other voltage tier
-     * @return True if compatible
+     * Checks if this tier can accept energy from the given tier without overload.
+     * Same tier = safe. Lower to higher = safe (step up). Higher to lower = dangerous.
      */
     public boolean canAccept(VoltageTier other) {
-        return this.equals(other);
+        return this.ordinal() >= other.ordinal();
     }
     
     /**
      * Gets the tier from its ordinal position safely.
-     * 
-     * @param ordinal The tier index (0-3)
-     * @return The voltage tier, or LV if invalid
      */
     public static VoltageTier fromOrdinal(int ordinal) {
         if (ordinal < 0 || ordinal >= values().length) {
             return LV;
         }
         return values()[ordinal];
+    }
+    
+    /**
+     * Gets the next higher tier, or EHV if already at max.
+     */
+    public VoltageTier stepUp() {
+        int next = ordinal() + 1;
+        if (next >= values().length) return EHV;
+        return values()[next];
+    }
+    
+    /**
+     * Gets the next lower tier, or LV if already at min.
+     */
+    public VoltageTier stepDown() {
+        int next = ordinal() - 1;
+        if (next < 0) return LV;
+        return values()[next];
     }
 }

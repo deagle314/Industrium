@@ -179,6 +179,13 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/common/block/RotationalMotorBlock.class
   com/industrium/core/common/block/ShaftBlock.class
   com/industrium/core/common/block/WarehouseBlock.class
+  com/industrium/core/common/power/
+  com/industrium/core/common/power/block/
+  com/industrium/core/common/power/block/BatteryBoxBlock.class
+  com/industrium/core/common/power/block/CoalGeneratorBlock.class
+  com/industrium/core/common/power/block/MVCableBlock.class
+  com/industrium/core/common/power/block/PowerCableBlock.class
+  com/industrium/core/common/power/block/TransformerBlock.class
   com/industrium/core/common/registry/
   com/industrium/core/common/registry/ModRegistry.class
   pack.mcmeta
