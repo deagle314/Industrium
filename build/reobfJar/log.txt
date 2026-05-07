@@ -142,6 +142,10 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/api/fluid/IFluidContainer.class
   com/industrium/core/api/fluid/IFluidProcessor.class
   com/industrium/core/api/heat/
+  com/industrium/core/api/heat/HeatApi$CommonHeatContainer.class
+  com/industrium/core/api/heat/HeatApi.class
+  com/industrium/core/api/heat/HeatTier.class
+  com/industrium/core/api/heat/ICooler.class
   com/industrium/core/api/heat/IHeatContainer.class
   com/industrium/core/api/heat/IHeater.class
   com/industrium/core/api/heat/Temperature.class
@@ -179,6 +183,17 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/common/block/RotationalMotorBlock.class
   com/industrium/core/common/block/ShaftBlock.class
   com/industrium/core/common/block/WarehouseBlock.class
+  com/industrium/core/common/heat/
+  com/industrium/core/common/heat/block/
+  com/industrium/core/common/heat/block/CoalBurnerBlock.class
+  com/industrium/core/common/heat/block/ElectricHeaterBlock.class
+  com/industrium/core/common/heat/block/HeatMeterBlock.class
+  com/industrium/core/common/heat/block/HeatPipeBlock.class
+  com/industrium/core/common/heat/block/InsulatedHeatPipeBlock.class
+  com/industrium/core/common/heat/block/RadiatorBlock.class
+  com/industrium/core/common/heat/block/SteamBoilerBlock.class
+  com/industrium/core/common/heat/block/ThermalBatteryBlock.class
+  com/industrium/core/common/heat/block/WaterCoolerBlock.class
   com/industrium/core/common/power/
   com/industrium/core/common/power/block/
   com/industrium/core/common/power/block/BatteryBoxBlock.class
