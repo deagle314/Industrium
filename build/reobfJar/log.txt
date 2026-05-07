@@ -229,6 +229,18 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/common/info/block/TemperatureSensorBlock.class
   com/industrium/core/common/info/block/ThresholdControllerBlock.class
   com/industrium/core/common/info/block/TimerUnitBlock.class
+  com/industrium/core/common/integration/
+  com/industrium/core/common/integration/ConversionProcess.class
+  com/industrium/core/common/integration/ElectricMotorMachine.class
+  com/industrium/core/common/integration/MotorPumpMachine.class
+  com/industrium/core/common/integration/SteamTurbineMachine.class
+  com/industrium/core/common/integration/block/
+  com/industrium/core/common/integration/block/ElectricHeaterBlock.class
+  com/industrium/core/common/integration/block/ElectricMotorBlock.class
+  com/industrium/core/common/integration/block/HeatExchangerBlock.class
+  com/industrium/core/common/integration/block/MotorPumpBlock.class
+  com/industrium/core/common/integration/block/SmartBreakerBlock.class
+  com/industrium/core/common/integration/block/SteamTurbineBlock.class
   com/industrium/core/common/logistics/
   com/industrium/core/common/logistics/block/
   com/industrium/core/common/logistics/block/ConveyorBeltBlock.class
@@ -241,6 +253,8 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/common/logistics/block/UnloaderBlock.class
   com/industrium/core/common/logistics/block/VerticalChuteBlock.class
   com/industrium/core/common/logistics/block/WarehouseBinBlock.class
+  com/industrium/core/common/machine/
+  com/industrium/core/common/machine/UnifiedMachine.class
   com/industrium/core/common/power/
   com/industrium/core/common/power/block/
   com/industrium/core/common/power/block/BatteryBoxBlock.class
@@ -262,4 +276,7 @@ Writing Output: /workspace/project/industrium/build/reobfJar/output.jar
   com/industrium/core/common/rotation/block/MechanicalPumpBlock.class
   com/industrium/core/common/rotation/block/ShaftBlock.class
   com/industrium/core/common/rotation/block/SteamEngineBlock.class
+  com/industrium/core/common/system/
+  com/industrium/core/common/system/INetworkNode.class
+  com/industrium/core/common/system/MachineStatus.class
   pack.mcmeta
