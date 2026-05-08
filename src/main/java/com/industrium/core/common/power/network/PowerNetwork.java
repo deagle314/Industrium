@@ -6,7 +6,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.*;
+import com.industrium.core.common.power.blockentity.BatteryBoxBlockEntity;
 import com.industrium.core.common.power.block.*;
+import com.industrium.core.api.power.*;
 
 /**
  * Power network graph.
@@ -28,6 +30,11 @@ public class PowerNetwork {
     private long totalConsumption;
     private long storedEnergy;
     private long capacity;
+    private long cableLoss = 0;
+    
+    // Constants
+    private static final double CABLE_LOSS_PERCENT = 0.01; // 1% loss per tick
+    private static final int MAX_TRANSFER_BATCH = 1000; // Max FE per tick per connection
     
     public PowerNetwork(Level level, String networkId) {
         this.level = level;
@@ -84,7 +91,7 @@ public class PowerNetwork {
             
             // Check block type and classify
             Block block = level.getBlockState(current).getBlock();
-            if (block instanceof PowerCableBlock) {
+            if (block instanceof PowerCableBlock || block instanceof MVCableBlock) {
                 // Cable - scan neighbors
                 for (Direction dir : Direction.values()) {
                     BlockPos neighbor = current.relative(dir);
@@ -93,7 +100,7 @@ public class PowerNetwork {
                         queue.add(neighbor);
                     }
                 }
-            } else if (block instanceof com.industrium.core.common.power.block.CoalGeneratorBlock) {
+            } else if (block instanceof CoalGeneratorBlock) {
                 producers.add(current);
             } else if (block instanceof BatteryBoxBlock) {
                 storages.add(current);
@@ -102,7 +109,142 @@ public class PowerNetwork {
             }
         }
         
+        // Calculate totals
+        calculateCapacity();
         isDirty = false;
+    }
+    
+    /**
+     * Calculates total network capacity.
+     */
+    private void calculateCapacity() {
+        capacity = 0;
+        storedEnergy = 0;
+        
+        for (BlockPos pos : storages) {
+            BlockEntity tile = level.getBlockEntity(pos);
+            if (tile instanceof BatteryBoxBlockEntity battery) {
+                capacity += battery.getMaxEnergy();
+                storedEnergy += battery.getEnergy();
+            }
+        }
+    }
+    
+    /**
+     * Main tick - distributes power.
+     */
+    public void tick() {
+        if (nodes.isEmpty()) return;
+        
+        // Step 1: Gather generation from producers
+        gatherGeneration();
+        
+        // Step 2: Apply cable loss
+        applyCableLoss();
+        
+        // Step 3: Distribute to storages first (fast charge)
+        distributeToStorages();
+        
+        // Step 4: Distribute to consumers
+        distributeToConsumers();
+    }
+    
+    /**
+     * Gathers power from all generators.
+     */
+    private void gatherGeneration() {
+        totalGeneration = 0;
+        
+        for (BlockPos pos : producers) {
+            BlockEntity tile = level.getBlockEntity(pos);
+            if (tile instanceof IGenerator generator && generator.isActive()) {
+                long generated = generator.generate();
+                totalGeneration += generated;
+            }
+        }
+    }
+    
+    /**
+     * Applies cable loss factor.
+     */
+    private void applyCableLoss() {
+        if (totalGeneration > 0 && nodes.size() > 1) {
+            long loss = (long)(totalGeneration * CABLE_LOSS_PERCENT * nodes.size());
+            cableLoss = loss;
+            totalGeneration -= loss;
+        }
+    }
+    
+    /**
+     * Distributes energy to storage blocks first.
+     */
+    private void distributeToStorages() {
+        if (totalGeneration <= 0) return;
+        
+        long remaining = totalGeneration;
+        
+        // Round-robin to storages
+        for (BlockPos pos : storages) {
+            if (remaining <= 0) break;
+            
+            BlockEntity tile = level.getBlockEntity(pos);
+            if (tile instanceof BatteryBoxBlockEntity battery) {
+                long needed = battery.getMaxEnergy() - battery.getEnergy();
+                if (needed > 0) {
+                    long canReceive = Math.min(needed, remaining);
+                    canReceive = Math.min(canReceive, battery.getTransferRate());
+                    canReceive = Math.min(canReceive, MAX_TRANSFER_BATCH);
+                    
+                    if (canReceive > 0) {
+                        battery.receiveEnergy(canReceive, false);
+                        remaining -= canReceive;
+                    }
+                }
+            }
+        }
+        
+        // What's left goes to consumers
+        totalConsumption = totalGeneration - remaining;
+    }
+    
+    /**
+     * Distributes remaining power to consumers.
+     */
+    private void distributeToConsumers() {
+        long remaining = totalConsumption;
+        
+        for (BlockPos pos : consumers) {
+            if (remaining <= 0) break;
+            
+            BlockEntity tile = level.getBlockEntity(pos);
+            if (tile instanceof IEnergyConsumer consumer) {
+                // Skip batteries - they're handled in storages
+                if (tile instanceof BatteryBoxBlockEntity) continue;
+                
+                long needed = consumer.getPowerDemand();
+                if (needed > 0) {
+                    long canProvide = Math.min(needed, remaining);
+                    canProvide = Math.min(canProvide, consumer.getMaxPowerReceive());
+                    canProvide = Math.min(canProvide, MAX_TRANSFER_BATCH);
+                    
+                    if (canProvide > 0) {
+                        // Use battery's receiveEnergy to add power to consumer
+                        if (tile instanceof BatteryBoxBlockEntity battery) {
+                            long received = battery.receiveEnergy(canProvide, false);
+                            remaining -= received;
+                            consumer.onPowerReceived(received);
+                        } else {
+                            // Direct power to consumer that has power storage
+                            consumer.onPowerReceived(canProvide);
+                            remaining -= canProvide;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Update stored energy stat
+        calculateCapacity();
     }
     
     /**
@@ -125,7 +267,9 @@ public class PowerNetwork {
      * Checks if block is a power consumer.
      */
     private boolean isPowerConsumer(BlockEntity tile) {
-        return tile != null; // Simplified - all machines can accept power
+        if (tile == null) return false;
+        // Machines that consume power
+        return tile instanceof IEnergyConsumer;
     }
     
     private BlockEntity neighborType(BlockPos pos) {
@@ -186,6 +330,13 @@ public class PowerNetwork {
      */
     public long getCapacity() {
         return capacity;
+    }
+    
+    /**
+     * Gets cable loss.
+     */
+    public long getCableLoss() {
+        return cableLoss;
     }
     
     /**
