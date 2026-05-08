@@ -22,5 +22,19 @@
   "tier.industrium.lv": "Low Voltage",
   "tier.industrium.mv": "Medium Voltage",
   "tier.industrium.hv": "High Voltage",
-  "tier.industrium.ehv": "Extreme High Voltage"
+  "tier.industrium.ehv": "Extreme High Voltage",
+  "block.industrium.coal_generator": "Coal Generator",
+  "block.industrium.battery_box": "Battery Box",
+  "block.industrium.power_cable": "Power Cable",
+  "block.industrium.electric_furnace": "Electric Furnace",
+  "block.industrium.coal_generator.desc": "Burns fuel to generate LV power",
+  "block.industrium.battery_box.desc": "Stores power for machines",
+  "block.industrium.power_cable.desc": "Transmits power between machines",
+  "block.industrium.electric_furnace.desc": "Uses power to smelt items automatically",
+  "tooltip.industrium.power_stored": "Power: %s FE",
+  "tooltip.industrium.generator_producing": "Producing: %s FE/t",
+  "tooltip.industrium.generator_idle": "Idle - add fuel",
+  "tooltip.industrium.machine_ready": "Ready",
+  "tooltip.industrium.machine_smelting": "Smelting...",
+  "tooltip.industrium.click_info": "Right-click for info"
 }

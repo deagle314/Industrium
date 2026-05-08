@@ -205,4 +205,11 @@ public class ElectricFurnaceBlockEntity extends BaseMachineBlockEntity implement
             isSmelting = tag.getBoolean("IsSmelting");
         }
     }
+    
+    /**
+     * Gets status text for interaction.
+     */
+    public String getStatusText() {
+        return powerStored + " / " + maxPower + " FE";
+    }
 }

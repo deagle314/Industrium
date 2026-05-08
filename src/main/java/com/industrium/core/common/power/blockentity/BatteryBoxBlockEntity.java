@@ -124,4 +124,23 @@ public class BatteryBoxBlockEntity extends BaseMachineBlockEntity implements IEn
             energy = tag.getLong("Energy");
         }
     }
+    
+    /**
+     * Gets status text for player interaction.
+     */
+    public String getStatusText() {
+        return energy + " / " + maxEnergy + " FE (" + voltageTier.name() + ")";
+    }
+    
+    /**
+     * Gets detailed stats for tooltip.
+     */
+    public String[] getStats() {
+        return new String[] {
+            voltageTier.name() + " Battery Box",
+            "Energy: " + energy + " / " + maxEnergy + " FE",
+            "Transfer: " + transferRate + " FE/t",
+            "Status: " + getStatus().name()
+        };
+    }
 }

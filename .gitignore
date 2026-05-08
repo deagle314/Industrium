@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+!gradle/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# Run
+run/
+
+# JDK
+jdk-*/
+gradle*
+*.tar.gz
+
+# OS
+.DS_Store
+Thumbs.db

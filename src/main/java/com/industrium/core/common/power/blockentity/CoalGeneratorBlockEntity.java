@@ -59,10 +59,28 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
     }
     
     /**
+     * Gets status text for interaction.
+     */
+    public String getStatusText() {
+        return isBurning ? "Generating " + generationRate + " FE/t" : "No fuel";
+    }
+    
+    /**
      * Checks if burning.
      */
     public boolean isBurning() {
         return isBurning;
+    }
+    
+    /**
+     * Gets detailed stats for interaction.
+     */
+    public String[] getStats() {
+        return new String[] {
+            "Fuel: " + fuelRemaining + "/" + maxFuel,
+            "Gen: " + generationRate + " FE/t",
+            "Tier: " + voltageTier.name()
+        };
     }
     
     // IGenerator implementation

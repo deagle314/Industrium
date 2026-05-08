@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "R",
+    "R",
+    "R"
+  ],
+  "key": {
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": { "item": "industrium:power_cable", "count": 4 }
+}
