@@ -7,7 +7,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,7 +39,6 @@ public abstract class BaseMachineBlockEntity extends BlockEntity {
      * Called each client tick.
      */
     public void tickClient() {
-        // Override for client-side animation
     }
     
     /**
@@ -79,7 +77,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity {
      * Gets update tag for initial sync.
      */
     @Override
-    protected CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag() {
         CompoundTag tag = super.getUpdateTag();
         saveClientData(tag);
         return tag;
@@ -88,8 +86,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity {
     /**
      * Handles incoming sync packet.
      */
-    @Override
-    public void onDataPacket(CompoundTag tag) {
+    public void handleUpdateTag(CompoundTag tag) {
         loadClientData(tag);
     }
     
@@ -107,7 +104,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity {
      * Loads NBT data.
      */
     @Override
-    protected void load(CompoundTag tag) {
+    public void load(CompoundTag tag) {
         super.load(tag);
         status = MachineStatus.valueOf(tag.getString("Status"));
         tickCounter = tag.getInt("TickCounter");

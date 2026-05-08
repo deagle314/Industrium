@@ -20,7 +20,7 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
     private boolean isBurning;
     
     public CoalGeneratorBlockEntity(BlockPos pos, BlockState state) {
-        super(BlockEntityType.BATTERY_BOX, pos, state); // Need proper type
+        super(null, pos, state);
         this.voltageTier = VoltageTier.LV;
         this.generationRate = VoltageTier.LV.getTransferRate();
         this.fuelRemaining = 0;
@@ -68,8 +68,13 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
     // IGenerator implementation
     
     @Override
-    public long getGeneration() {
+    public long generate() {
         return isBurning ? generationRate : 0;
+    }
+    
+    @Override
+    public long getProductionRate() {
+        return generationRate;
     }
     
     @Override
@@ -78,8 +83,13 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
     }
     
     @Override
-    public long getMaxGeneration() {
-        return generationRate;
+    public boolean isActive() {
+        return isBurning;
+    }
+    
+    @Override
+    public String getFuelType() {
+        return "coal";
     }
     
     @Override

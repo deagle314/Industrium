@@ -19,7 +19,7 @@ public class BatteryBoxBlock extends Block {
             .sound(SoundType.METAL));
     }
     
-    @Override
+    
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BatteryBoxBlockEntity(pos, state);
     }

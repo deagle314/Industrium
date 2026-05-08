@@ -19,7 +19,7 @@ public class BatteryBoxBlockEntity extends BaseMachineBlockEntity implements IEn
     private long transferRate;
     
     public BatteryBoxBlockEntity(BlockPos pos, BlockState state) {
-        super(BlockEntityType.BATTERY_BOX, pos, state);
+        super(null, pos, state);
         this.voltageTier = VoltageTier.LV;
         this.maxEnergy = VoltageTier.LV.getTransferRate() * 10;
         this.energy = 0;
