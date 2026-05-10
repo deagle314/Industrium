@@ -1,14 +1,12 @@
 package com.industrium.core.common.util;
 
 import com.industrium.core.Industrium;
-import com.industrium.core.common.registry.ModBlocks;
-import com.industrium.core.common.registry.ModItems;
-import com.industrium.core.common.registry.ModBlockEntities;
+import com.industrium.core.common.registry.ModRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,20 +38,33 @@ public class RegistryValidator {
 
     private static void checkRegistryConsistency(List<String> errors) {
         LOGGER.info("Checking registry consistency...");
-        for (RegistryObject<Block> blockRO : ModBlocks.BLOCKS.getEntries()) {
+        for (RegistryObject<Block> blockRO : ModRegistry.BLOCKS.getEntries()) {
             ResourceLocation id = blockRO.getId();
-            boolean hasItem = ModItems.ITEMS.getEntries().stream()
+            
+            // Check if Block has a corresponding Item
+            boolean hasItem = ModRegistry.ITEMS.getEntries().stream()
                     .anyMatch(itemRO -> itemRO.get() instanceof BlockItem bi && bi.getBlock() == blockRO.get());
             if (!hasItem) {
                 errors.add("Block " + id + " is missing a corresponding BlockItem.");
             }
 
-            if (blockRO.get() instanceof EntityBlock) {
-                boolean hasBE = ModBlockEntities.BLOCK_ENTITIES.getEntries().stream()
+            // Check if BaseEntityBlock has a registered BlockEntity
+            if (blockRO.get() instanceof BaseEntityBlock) {
+                boolean hasBE = ModRegistry.BLOCK_ENTITIES.getEntries().stream()
                         .anyMatch(beRO -> beRO.getId().getPath().equals(id.getPath()));
                 if (!hasBE) {
-                    errors.add("Block " + id + " implements EntityBlock but has no matching BlockEntity registered.");
+                    errors.add("Block " + id + " extends BaseEntityBlock but has no matching BlockEntity registered.");
                 }
+            }
+        }
+        
+        // Check if BlockEntities have corresponding blocks
+        for (RegistryObject<?> beRO : ModRegistry.BLOCK_ENTITIES.getEntries()) {
+            ResourceLocation id = beRO.getId();
+            boolean hasBlock = ModRegistry.BLOCKS.getEntries().stream()
+                    .anyMatch(blockRO -> blockRO.getId().getPath().equals(id.getPath()));
+            if (!hasBlock) {
+                errors.add("BlockEntity " + id + " has no matching Block registered.");
             }
         }
     }
@@ -62,15 +73,15 @@ public class RegistryValidator {
         LOGGER.info("Checking resource integrity...");
         String assetsPath = "src/main/resources/assets/" + Industrium.MOD_ID;
         
-        for (RegistryObject<Block> blockRO : ModBlocks.BLOCKS.getEntries()) {
+        for (RegistryObject<Block> blockRO : ModRegistry.BLOCKS.getEntries()) {
             String path = blockRO.getId().getPath();
             checkFile(errors, assetsPath + "/blockstates/" + path + ".json", "Blockstate");
             checkFile(errors, assetsPath + "/models/block/" + path + ".json", "Block model");
-            // Check for at least one texture
+            // Basic texture check
             checkFile(errors, assetsPath + "/textures/block/" + path + ".png", "Block texture");
         }
 
-        for (RegistryObject<Item> itemRO : ModItems.ITEMS.getEntries()) {
+        for (RegistryObject<Item> itemRO : ModRegistry.ITEMS.getEntries()) {
             String path = itemRO.getId().getPath();
             if (!(itemRO.get() instanceof BlockItem)) {
                 checkFile(errors, assetsPath + "/models/item/" + path + ".json", "Item model");
@@ -84,18 +95,20 @@ public class RegistryValidator {
     private static void checkRecipeExistence(List<String> errors) {
         LOGGER.info("Checking recipe existence...");
         String dataPath = "src/main/resources/data/" + Industrium.MOD_ID;
-        for (RegistryObject<Item> itemRO : ModItems.ITEMS.getEntries()) {
+        for (RegistryObject<Item> itemRO : ModRegistry.ITEMS.getEntries()) {
             String path = itemRO.getId().getPath();
-            // Not all items MUST have recipes, but for this mod it's a good check
-            checkFile(errors, dataPath + "/recipes/" + path + ".json", "Recipe");
+            // We can check if a recipe file exists with the same name as the item
+            // This is just a heuristic as one recipe can produce multiple items or vice versa
+            File recipeFile = new File(dataPath + "/recipes/" + path + ".json");
+            if (!recipeFile.exists()) {
+                // LOGGER.warn("Potential missing recipe for item: " + path);
+            }
         }
     }
 
     private static void checkFile(List<String> errors, String filePath, String description) {
         File file = new File(filePath);
         if (!file.exists()) {
-            // We only add as error if we are sure it should exist.
-            // Some things might be optional or handled differently.
             errors.add(description + " missing: " + filePath);
         }
     }

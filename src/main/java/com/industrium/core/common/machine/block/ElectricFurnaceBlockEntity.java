@@ -1,7 +1,7 @@
 package com.industrium.core.common.machine.block;
 
 import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
-import com.industrium.core.common.registry.ModBlockEntities;
+import com.industrium.core.common.registry.MachineModule;
 import com.industrium.core.api.power.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -27,7 +27,7 @@ public class ElectricFurnaceBlockEntity extends BaseMachineBlockEntity implement
     private boolean isSmelting = false;
     
     public ElectricFurnaceBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ELECTRIC_FURNACE.get(), pos, state);
+        super(MachineModule.ELECTRIC_FURNACE_BE.get(), pos, state);
         this.status = com.industrium.core.common.system.MachineStatus.IDLE;
     }
     
