@@ -1,6 +1,7 @@
 package com.industrium.core.common.power.block;
 
 import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
+import com.industrium.core.common.registry.ModBlockEntities;
 import com.industrium.core.api.power.VoltageTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +24,7 @@ public class CableBlockEntity extends BaseMachineBlockEntity {
     private boolean needsNetworkUpdate = false;
     
     public CableBlockEntity(BlockPos pos, BlockState state) {
-        super(null, pos, state);
+        super(ModBlockEntities.POWER_CABLE.get(), pos, state);
     }
     
     /**
