@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.*;
 import com.industrium.core.common.power.blockentity.BatteryBoxBlockEntity;
-import com.industrium.core.common.power.block.*;
+import com.industrium.core.common.block.PowerCableBlock;
 import com.industrium.core.common.block.BatteryBoxBlock;
 import com.industrium.core.api.power.*;
 
