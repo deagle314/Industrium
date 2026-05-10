@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "industrium:block/electric_furnace",
+    "down": "industrium:block/electric_furnace",
+    "up": "industrium:block/electric_furnace",
+    "north": "industrium:block/electric_furnace",
+    "south": "industrium:block/electric_furnace",
+    "east": "industrium:block/electric_furnace",
+    "west": "industrium:block/electric_furnace"
+  }
+}

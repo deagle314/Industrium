@@ -10,6 +10,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.InteractionResult;
 import com.industrium.core.common.power.blockentity.BatteryBoxBlockEntity;
 
@@ -19,6 +21,20 @@ public class BatteryBoxBlock extends Block {
         super(Block.Properties.of()
             .strength(2.0f, 10.0f)
             .sound(SoundType.METAL));
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new BatteryBoxBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return (l, pos, st, te) -> {
+            if (te instanceof BatteryBoxBlockEntity battery) {
+                battery.tickServer();
+            }
+        };
     }
     
     /**

@@ -1,12 +1,14 @@
 package com.industrium.core.common.machine.block;
 
-import com.industrium.core.common.machine.block.ElectricFurnaceBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.Level;
 
 /**
  * Electric Furnace - powered smelting machine.
@@ -20,7 +22,17 @@ public class ElectricFurnaceBlock extends Block {
             .sound(SoundType.METAL));
     }
 
+    @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ElectricFurnaceBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return (l, pos, st, te) -> {
+            if (te instanceof ElectricFurnaceBlockEntity furnace) {
+                furnace.tickServer();
+            }
+        };
     }
 }

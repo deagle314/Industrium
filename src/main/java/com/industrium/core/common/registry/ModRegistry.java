@@ -7,6 +7,8 @@ import com.industrium.core.common.power.block.CoalGeneratorBlock;
 import com.industrium.core.common.power.block.PowerCableBlock;
 import com.industrium.core.common.power.blockentity.BatteryBoxBlockEntity;
 import com.industrium.core.common.power.blockentity.CoalGeneratorBlockEntity;
+import com.industrium.core.common.power.blockentity.CableBlockEntity;
+import com.industrium.core.common.machine.block.ElectricFurnaceBlockEntity;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -92,6 +94,20 @@ public class ModRegistry {
                     () -> BlockEntityType.Builder.of(
                             CoalGeneratorBlockEntity::new,
                             COAL_GENERATOR.get()
+                    ).build(null));
+
+    public static final RegistryObject<BlockEntityType<CableBlockEntity>> POWER_CABLE_TE =
+            BLOCK_ENTITIES.register("power_cable",
+                    () -> BlockEntityType.Builder.of(
+                            CableBlockEntity::new,
+                            POWER_CABLE.get()
+                    ).build(null));
+
+    public static final RegistryObject<BlockEntityType<ElectricFurnaceBlockEntity>> ELECTRIC_FURNACE_TE =
+            BLOCK_ENTITIES.register("electric_furnace",
+                    () -> BlockEntityType.Builder.of(
+                            ElectricFurnaceBlockEntity::new,
+                            ELECTRIC_FURNACE.get()
                     ).build(null));
 
     /**
