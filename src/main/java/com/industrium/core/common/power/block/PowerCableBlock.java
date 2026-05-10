@@ -1,6 +1,5 @@
 package com.industrium.core.common.power.block;
 
-import com.industrium.core.common.power.block.CableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -25,10 +24,12 @@ public class PowerCableBlock extends Block {
     
     
     @Override
+    @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CableBlockEntity(pos, state);
     }
 
+    @Override
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return (l, pos, st, te) -> {

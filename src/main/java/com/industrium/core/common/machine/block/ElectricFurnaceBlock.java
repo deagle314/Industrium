@@ -23,10 +23,12 @@ public class ElectricFurnaceBlock extends Block {
     }
 
     @Override
+    @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ElectricFurnaceBlockEntity(pos, state);
     }
 
+    @Override
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return (l, pos, st, te) -> {

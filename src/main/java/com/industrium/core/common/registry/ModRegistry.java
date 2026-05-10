@@ -7,7 +7,7 @@ import com.industrium.core.common.power.block.CoalGeneratorBlock;
 import com.industrium.core.common.power.block.PowerCableBlock;
 import com.industrium.core.common.power.blockentity.BatteryBoxBlockEntity;
 import com.industrium.core.common.power.blockentity.CoalGeneratorBlockEntity;
-import com.industrium.core.common.power.blockentity.CableBlockEntity;
+import com.industrium.core.common.power.block.CableBlockEntity;
 import com.industrium.core.common.machine.block.ElectricFurnaceBlockEntity;
 
 import net.minecraft.world.item.BlockItem;
