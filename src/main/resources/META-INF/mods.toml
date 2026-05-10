@@ -1,20 +1,26 @@
 modLoader="javafml"
-loaderVersion="[47,48)"
+loaderVersion="[47,)"
 license="All Rights Reserved"
+
+[[mods]]
 modId="industrium"
 version="1.0.0"
-group="com.industrium"
-url="https://industrium.com"
-updateJSON="https://industrium.com/update.json"
+displayName="Industrium"
+authors="Industrium Team"
+description='''
+Industrial technology mod for Minecraft.
+'''
 
 [[dependencies.industrium]]
 modId="forge"
-versionRange="[47,48)"
+mandatory=true
+versionRange="[47,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.industrium]]
 modId="minecraft"
-versionRange="[1.20.1,1.20.2)"
-ordering="AFTER"
+mandatory=true
+versionRange="[1.20.1]"
+ordering="NONE"
 side="BOTH"
