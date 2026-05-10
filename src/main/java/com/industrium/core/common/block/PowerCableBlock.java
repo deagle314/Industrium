@@ -1,6 +1,6 @@
 package com.industrium.core.common.block;
 
-import com.industrium.core.common.power.block.CableBlockEntity;
+import com.industrium.core.common.power.blockentity.CableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
