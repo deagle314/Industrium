@@ -3,7 +3,7 @@ package com.industrium.core.common.registry;
 import com.industrium.core.common.block.BatteryBoxBlock;
 import com.industrium.core.common.block.PowerCableBlock;
 import com.industrium.core.common.power.block.CoalGeneratorBlock;
-import com.industrium.core.common.power.block.CableBlockEntity;
+import com.industrium.core.common.power.blockentity.CableBlockEntity;
 import com.industrium.core.common.power.blockentity.BatteryBoxBlockEntity;
 import com.industrium.core.common.power.blockentity.CoalGeneratorBlockEntity;
 import net.minecraft.world.item.BlockItem;
