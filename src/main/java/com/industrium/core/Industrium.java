@@ -1,6 +1,7 @@
 package com.industrium.core;
 
 import com.industrium.core.common.registry.ModRegistry;
+import com.industrium.core.common.util.RegistryValidator;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -13,5 +14,8 @@ public class Industrium {
         ModRegistry.register(
             FMLJavaModLoadingContext.get().getModEventBus()
         );
+
+        // Run validation suite
+        RegistryValidator.validate();
     }
 }

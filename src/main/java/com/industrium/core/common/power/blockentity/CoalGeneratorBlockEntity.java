@@ -1,6 +1,7 @@
 package com.industrium.core.common.power.blockentity;
 
 import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
+import com.industrium.core.common.registry.ModBlockEntities;
 import com.industrium.core.api.power.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +21,7 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
     private boolean isBurning;
     
     public CoalGeneratorBlockEntity(BlockPos pos, BlockState state) {
-        super(null, pos, state);
+        super(ModBlockEntities.COAL_GENERATOR.get(), pos, state);
         this.voltageTier = VoltageTier.LV;
         this.generationRate = VoltageTier.LV.getTransferRate();
         this.fuelRemaining = 0;
