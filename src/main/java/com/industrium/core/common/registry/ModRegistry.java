@@ -4,7 +4,7 @@ import com.industrium.core.Industrium;
 import com.industrium.core.common.block.BatteryBoxBlock;
 import com.industrium.core.common.machine.block.ElectricFurnaceBlock;
 import com.industrium.core.common.power.block.CoalGeneratorBlock;
-import com.industrium.core.common.power.block.PowerCableBlock;
+import com.industrium.core.common.block.PowerCableBlock;
 import com.industrium.core.common.power.blockentity.BatteryBoxBlockEntity;
 import com.industrium.core.common.power.blockentity.CoalGeneratorBlockEntity;
 import com.industrium.core.common.power.block.CableBlockEntity;
