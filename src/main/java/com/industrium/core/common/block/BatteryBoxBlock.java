@@ -1,7 +1,8 @@
 package com.industrium.core.common.block;
 
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -13,14 +14,20 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.InteractionResult;
+
 import com.industrium.core.common.power.blockentity.BatteryBoxBlockEntity;
 
-/** LV Battery Box - stores 10 FE. */
-public class BatteryBoxBlock extends Block {
+public class BatteryBoxBlock extends BaseEntityBlock {
+
     public BatteryBoxBlock() {
-        super(Block.Properties.of()
+        super(Properties.of()
             .strength(2.0f, 10.0f)
             .sound(SoundType.METAL));
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
@@ -29,42 +36,42 @@ public class BatteryBoxBlock extends Block {
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+        Level level, BlockState state, BlockEntityType<T> type) {
+
         return (l, pos, st, te) -> {
             if (te instanceof BatteryBoxBlockEntity battery) {
                 battery.tickServer();
             }
         };
     }
-    
-    /**
-     * Right-click interaction - send status to player.
-     */
+
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, 
-            InteractionHand hand, BlockHitResult hit) {
-        // Server-side only
-        if (level.isClientSide()) return InteractionResult.PASS;
-        
+    public InteractionResult use(
+        BlockState state, Level level, BlockPos pos,
+        Player player, InteractionHand hand, BlockHitResult hit) {
+
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+
         BlockEntity tile = level.getBlockEntity(pos);
         if (!(tile instanceof BatteryBoxBlockEntity battery)) {
             return InteractionResult.PASS;
         }
-        
-        // Get status based on sneak
+
         String status;
+
         if (player.isShiftKeyDown()) {
-            // Detailed stats
             String[] stats = battery.getStats();
             status = stats[0] + " | " + stats[1] + " | " + stats[2];
         } else {
             status = battery.getStatusText();
         }
-        
-        // Send status message to player
-        Component msg = Component.literal("[Industrium] " + status);
-        player.displayClientMessage(msg, true);
-        
+
+        player.displayClientMessage(
+            Component.literal("[Industrium] " + status),
+            true
+        );
+
         return InteractionResult.SUCCESS;
     }
 }
