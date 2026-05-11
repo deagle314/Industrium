@@ -12,10 +12,9 @@ import java.util.*;
 
 /**
  * Physics-based fluid simulation engine.
- * Implements pressure-driven flow and ideal fluid law approximation.
+ * Updated to use long IDs and Level-aware constructor.
  */
 public class FluidNetwork extends AbstractNetworkGraph<IFluidNode> {
-    private final Level level;
     private static final double DAMPING_FACTOR = 0.5;
     private static final long AMBIENT_PRESSURE = 100; // kPa
     private static final double K_FACTOR = 1000.0;
@@ -24,30 +23,17 @@ public class FluidNetwork extends AbstractNetworkGraph<IFluidNode> {
     private final Map<BlockPos, List<BlockPos>> adjacencyCache = new HashMap<>();
     private final Map<BlockPos, IFluidNode> nodeInstanceCache = new HashMap<>();
 
-    public FluidNetwork(Level level, UUID id) {
-        super(id);
-        this.level = level;
+    public FluidNetwork(Level level, long id) {
+        super(level, id);
     }
 
     @Override
-    public void addNode(BlockPos pos) {
-        super.addNode(pos);
+    protected void onNodeAdded(BlockPos pos) {
         clearCaches();
     }
 
     @Override
-    public void removeNode(BlockPos pos) {
-        super.removeNode(pos);
-        clearCaches();
-    }
-
-    @Override
-    public void onMerge(AbstractNetworkGraph<IFluidNode> other) {
-        clearCaches();
-    }
-
-    @Override
-    public void onSplit(Set<BlockPos> newComponentNodes) {
+    protected void onNodeRemoved(BlockPos pos) {
         clearCaches();
     }
 
@@ -90,20 +76,18 @@ public class FluidNetwork extends AbstractNetworkGraph<IFluidNode> {
             double vMax = node.getCapacity();
             double t = node.getTemperature();
 
-            // P = P_ambient + (V/V_max * T_factor * k)
-            // Incorporating temperature: P = P_ambient + (V/V_max * (1 + T * T_factor) * k)
+            // P = P_ambient + (V/V_max * (1 + T * T_factor) * k)
             long pressure = (long) (AMBIENT_PRESSURE + (v / vMax * (1.0 + Math.max(0, t) * T_FACTOR) * K_FACTOR));
             node.setPressure(pressure);
 
             // Failure states (rupture/explosion)
-            if (pressure > 8000 || t > 1000) { // Example thresholds
+            if (pressure > 8000 || t > 1000) {
                 level.explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2.0f, Level.ExplosionInteraction.BLOCK);
-                return; // Network might be destroyed, stop processing this tick
+                return; 
             }
         }
 
         // 2. Calculate flows
-        // ΔV = (P_A - P_B) * conductivity / resistance
         Map<BlockPos, Long> deltas = new HashMap<>();
         for (BlockPos pos : nodes) deltas.put(pos, 0L);
 
@@ -169,12 +153,10 @@ public class FluidNetwork extends AbstractNetworkGraph<IFluidNode> {
             if (node == null || entry.getValue() == 0) continue;
 
             if (entry.getValue() > 0) {
-                // Determine fluid type to fill
                 FluidStack toFill = FluidStack.EMPTY;
                 if (!node.getFluid().isEmpty()) {
                     toFill = node.getFluid().copy();
                 } else {
-                    // Try to get fluid type from neighbors who are sending fluid
                     for (Direction dir : Direction.values()) {
                         BlockPos neighborPos = entry.getKey().relative(dir);
                         if (nodes.contains(neighborPos)) {

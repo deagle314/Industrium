@@ -8,12 +8,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.UUID;
-
 public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEntity implements IRotationNode {
     protected double rpm;
     protected double torque;
-    protected UUID networkId;
+    protected long networkId = -1;
 
     public BaseRotationMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -40,12 +38,12 @@ public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEnt
     }
 
     @Override
-    public UUID getNetworkId() {
+    public long getNetworkId() {
         return networkId;
     }
 
     @Override
-    public void setNetworkId(UUID id) {
+    public void setNetworkId(long id) {
         this.networkId = id;
     }
 
@@ -75,9 +73,7 @@ public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEnt
         super.saveAdditional(tag);
         tag.putDouble("RPM", rpm);
         tag.putDouble("Torque", torque);
-        if (networkId != null) {
-            tag.putUUID("NetworkId", networkId);
-        }
+        tag.putLong("NetworkId", networkId);
     }
 
     @Override
@@ -85,8 +81,8 @@ public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEnt
         super.load(tag);
         rpm = tag.getDouble("RPM");
         torque = tag.getDouble("Torque");
-        if (tag.hasUUID("NetworkId")) {
-            networkId = tag.getUUID("NetworkId");
+        if (tag.contains("NetworkId")) {
+            networkId = tag.getLong("NetworkId");
         }
     }
 }

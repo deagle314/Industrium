@@ -3,8 +3,6 @@ package com.industrium.core.api.network;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-import java.util.UUID;
-
 /**
  * The root interface for all Industrium simulation nodes.
  * 

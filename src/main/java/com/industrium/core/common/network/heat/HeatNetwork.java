@@ -11,30 +11,26 @@ import java.util.*;
 
 /**
  * Physics-based thermal simulation engine using a discrete thermal diffusion model.
+ * Updated to use long IDs and Level-aware constructor.
  */
 public class HeatNetwork extends AbstractNetworkGraph<IHeatNode> {
-    private final Level level;
     private static final double DAMPING_FACTOR = 0.2;
     private static final double AMBIENT_TRANSFER_COEFFICIENT = 0.05;
-    private static final double DEFAULT_AMBIENT_TEMP = 20.0;
     
     private final Map<BlockPos, List<BlockPos>> adjacencyCache = new HashMap<>();
     private final Map<BlockPos, IHeatNode> nodeInstanceCache = new HashMap<>();
 
-    public HeatNetwork(Level level, UUID id) {
-        super(id);
-        this.level = level;
+    public HeatNetwork(Level level, long id) {
+        super(level, id);
     }
 
     @Override
-    public void addNode(BlockPos pos) {
-        super.addNode(pos);
+    protected void onNodeAdded(BlockPos pos) {
         clearCaches();
     }
 
     @Override
-    public void removeNode(BlockPos pos) {
-        super.removeNode(pos);
+    protected void onNodeRemoved(BlockPos pos) {
         clearCaches();
     }
 
@@ -96,7 +92,6 @@ public class HeatNetwork extends AbstractNetworkGraph<IHeatNode> {
                 if (Math.abs(tempA - tempB) < 0.01) continue;
 
                 // ΔQ = (T_A - T_B) * k_eff * transferFactor / R_eff
-                // Assuming transferFactor = 1.0 for simplicity unless specified
                 double k_eff = (nodeA.getConductivityModifier() + nodeB.getConductivityModifier()) / 2.0;
                 double r_eff = (nodeA.getHeatResistance() + nodeB.getHeatResistance()) / 2.0;
                 if (r_eff < 0.001) r_eff = 0.001; // Prevent division by zero
@@ -104,17 +99,11 @@ public class HeatNetwork extends AbstractNetworkGraph<IHeatNode> {
                 double flux = (tempA - tempB) * k_eff / r_eff;
                 flux *= DAMPING_FACTOR;
 
-                // Clamp flux to prevent overshoot
-                // Max flux is half of the energy needed to equalize temperatures
-                // Energy = Temp * Capacity
-                // T_target = (T_A * C_A + T_B * C_B) / (C_A + C_B)
-                // ΔQ_max_A = (T_target - T_A) * C_A
                 double capA = nodeA.getHeatCapacity();
                 double capB = nodeB.getHeatCapacity();
                 double targetTemp = (tempA * capA + tempB * capB) / (capA + capB);
                 double maxFlux = (tempA - targetTemp) * capA;
                 
-                // Since flux is from A to B
                 if (flux > 0) {
                     flux = Math.min(flux, maxFlux);
                 } else {
@@ -126,12 +115,10 @@ public class HeatNetwork extends AbstractNetworkGraph<IHeatNode> {
             }
 
             // 2. Ambient Exchange (Newton's Law of Cooling)
-            // ΔQ_ambient = h * (T_ambient - T)
-            double ambientTemp = level.getBiome(posA).get().getTemperature(posA) * 20.0; // Approximation of MC temp to Celsius
+            double ambientTemp = level.getBiome(posA).get().getTemperature(posA) * 20.0;
             double h = AMBIENT_TRANSFER_COEFFICIENT * nodeA.getConductivityModifier();
             double ambientFlux = h * (ambientTemp - nodeA.getTemperature());
             
-            // Limit ambient flux to prevent oscillating around ambient
             double maxAmbientFlux = (ambientTemp - nodeA.getTemperature()) * nodeA.getHeatCapacity() * DAMPING_FACTOR;
             if (ambientFlux > 0) {
                 ambientFlux = Math.min(ambientFlux, maxAmbientFlux);

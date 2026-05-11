@@ -10,8 +10,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.UUID;
-
 /**
  * Base block entity for fluid-handling machines.
  * Handles network registration, fluid storage, and NBT persistence.
@@ -24,7 +22,7 @@ public abstract class BaseFluidMachineBlockEntity extends BaseMachineBlockEntity
     protected long pressure = 100;
     protected double viscosity = 1.0;
     protected double diameter = 1.0;
-    protected UUID networkId;
+    protected long networkId = -1;
 
     public BaseFluidMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, long capacity) {
         super(type, pos, state);
@@ -98,12 +96,12 @@ public abstract class BaseFluidMachineBlockEntity extends BaseMachineBlockEntity
     }
 
     @Override
-    public UUID getNetworkId() {
+    public long getNetworkId() {
         return networkId;
     }
 
     @Override
-    public void setNetworkId(UUID id) {
+    public void setNetworkId(long id) {
         this.networkId = id;
     }
 
@@ -151,9 +149,7 @@ public abstract class BaseFluidMachineBlockEntity extends BaseMachineBlockEntity
         tag.putLong("Pressure", pressure);
         tag.putDouble("Viscosity", viscosity);
         tag.putDouble("Diameter", diameter);
-        if (networkId != null) {
-            tag.putUUID("NetworkId", networkId);
-        }
+        tag.putLong("NetworkId", networkId);
     }
 
     @Override
@@ -165,8 +161,8 @@ public abstract class BaseFluidMachineBlockEntity extends BaseMachineBlockEntity
         pressure = tag.getLong("Pressure");
         viscosity = tag.getDouble("Viscosity");
         diameter = tag.getDouble("Diameter");
-        if (tag.hasUUID("NetworkId")) {
-            networkId = tag.getUUID("NetworkId");
+        if (tag.contains("NetworkId")) {
+            networkId = tag.getLong("NetworkId");
         }
     }
 
