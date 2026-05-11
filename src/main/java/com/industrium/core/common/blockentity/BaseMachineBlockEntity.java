@@ -3,6 +3,7 @@ package com.industrium.core.common.blockentity;
 import com.industrium.core.common.system.MachineStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -32,7 +33,10 @@ public abstract class BaseMachineBlockEntity extends BlockEntity {
      */
     public void tickServer() {
         tickCounter++;
-        markClientSync();
+        if (needsClientSync && level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            needsClientSync = false;
+        }
     }
     
     /**
@@ -73,6 +77,11 @@ public abstract class BaseMachineBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
     
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        loadClientData(pkt.getTag());
+    }
+    
     /**
      * Gets update tag for initial sync.
      */
@@ -86,6 +95,7 @@ public abstract class BaseMachineBlockEntity extends BlockEntity {
     /**
      * Handles incoming sync packet.
      */
+    @Override
     public void handleUpdateTag(CompoundTag tag) {
         loadClientData(tag);
     }

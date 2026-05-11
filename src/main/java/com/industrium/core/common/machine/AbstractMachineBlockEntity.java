@@ -58,6 +58,31 @@ public abstract class AbstractMachineBlockEntity extends BaseMachineBlockEntity 
         }
     }
     
+    @Override
+    protected void saveClientData(CompoundTag tag) {
+        super.saveClientData(tag);
+        CompoundTag modulesTag = new CompoundTag();
+        for (int i = 0; i < modules.size(); i++) {
+            CompoundTag moduleTag = new CompoundTag();
+            modules.get(i).saveClientData(moduleTag);
+            modulesTag.put("Module" + i, moduleTag);
+        }
+        tag.put("Modules", modulesTag);
+    }
+
+    @Override
+    protected void loadClientData(CompoundTag tag) {
+        super.loadClientData(tag);
+        if (tag.contains("Modules")) {
+            CompoundTag modulesTag = tag.getCompound("Modules");
+            for (int i = 0; i < modules.size(); i++) {
+                if (modulesTag.contains("Module" + i)) {
+                    modules.get(i).loadClientData(modulesTag.getCompound("Module" + i));
+                }
+            }
+        }
+    }
+    
     public void onModuleUpdated() {
         for (MachineModule module : modules) {
             module.onMachineUpdate();

@@ -31,6 +31,16 @@ public class InventoryModule implements MachineModule {
         ContainerHelper.loadAllItems(tag, items);
     }
 
+    @Override
+    public void saveClientData(CompoundTag tag) {
+        // Inventories are typically handled by containers, so we don't sync them by default
+    }
+
+    @Override
+    public void loadClientData(CompoundTag tag) {
+        // Inventories are typically handled by containers, so we don't sync them by default
+    }
+
     public ItemStack getItem(int slot) {
         return items.get(slot);
     }
