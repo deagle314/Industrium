@@ -16,35 +16,11 @@ public interface IRotationNode extends IIndustriumNode, IPhysicalNode {
     double getRPM();
 
     /**
-     * Sets the current rotational speed.
-     * 
-     * @param rpm The new RPM value
-     */
-    void setRPM(double rpm);
-
-    /**
      * Gets the current net torque applied to this node.
      * 
      * @return Torque in N*m (Newtons per meter)
      */
     double getTorque();
-
-    /**
-     * Sets the current net torque.
-     * 
-     * @param torque The new torque value
-     */
-    void setTorque(double torque);
-
-    /**
-     * Gets the rotational inertia of this node.
-     * 
-     * Higher inertia means slower acceleration/deceleration.
-     * 
-     * @return Inertia in kg*m^2
-     */
-    @Override
-    double getInertia();
 
     /**
      * Gets the friction coefficient of this node.
@@ -53,21 +29,27 @@ public interface IRotationNode extends IIndustriumNode, IPhysicalNode {
      * 
      * @return Friction coefficient (0.0 to 1.0)
      */
-    double getFriction();
+    default double getFriction() {
+        return 0.1;
+    }
 
     /**
      * Gets the maximum safe RPM before mechanical failure.
      * 
      * @return Maximum safe RPM
      */
-    double getMaxRPM();
+    default double getMaxRPM() {
+        return 1000.0;
+    }
 
     /**
      * Gets the maximum safe torque before mechanical failure.
      * 
      * @return Maximum safe torque in N*m
      */
-    double getMaxTorque();
+    default double getMaxTorque() {
+        return 1000.0;
+    }
 
     /**
      * Gets the efficiency of torque transfer through this node.

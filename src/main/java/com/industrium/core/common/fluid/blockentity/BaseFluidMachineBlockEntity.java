@@ -2,6 +2,7 @@ package com.industrium.core.common.fluid.blockentity;
 
 import com.industrium.core.Industrium;
 import com.industrium.core.api.network.IFluidNode;
+import com.industrium.core.api.network.SystemType;
 import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -27,6 +28,11 @@ public abstract class BaseFluidMachineBlockEntity extends BaseMachineBlockEntity
     public BaseFluidMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, long capacity) {
         super(type, pos, state);
         this.capacity = capacity;
+    }
+
+    @Override
+    public SystemType getSystemType() {
+        return SystemType.FLUID;
     }
 
     @Override
@@ -72,7 +78,7 @@ public abstract class BaseFluidMachineBlockEntity extends BaseMachineBlockEntity
 
     @Override
     public long getThroughput() {
-        return 1000; // Default
+        return 1000;
     }
 
     @Override
@@ -103,6 +109,15 @@ public abstract class BaseFluidMachineBlockEntity extends BaseMachineBlockEntity
     @Override
     public void setNetworkId(long id) {
         this.networkId = id;
+    }
+
+    /**
+     * Checks if this container can hold the given fluid.
+     * @param fluid The fluid to check
+     * @return true if compatible
+     */
+    protected boolean canHold(FluidStack fluid) {
+        return fluidStack.isEmpty() || fluidStack.isFluidEqual(fluid);
     }
 
     @Override
