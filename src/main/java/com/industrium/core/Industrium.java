@@ -2,7 +2,9 @@ package com.industrium.core;
 
 import com.industrium.core.common.network.NetworkManager;
 import com.industrium.core.common.power.network.PowerNetwork;
+import com.industrium.core.common.network.heat.HeatNetwork;
 import com.industrium.core.api.network.IPowerNode;
+import com.industrium.core.api.network.IHeatNode;
 import com.industrium.core.common.registry.ModRegistry;
 import com.industrium.core.common.util.RegistryValidator;
 import net.minecraftforge.fml.common.Mod;
@@ -15,6 +17,9 @@ public class Industrium {
     
     public static final NetworkManager<IPowerNode, PowerNetwork> POWER_NETWORK_MANAGER = 
         new NetworkManager<>(PowerNetwork::new);
+    
+    public static final NetworkManager<IHeatNode, HeatNetwork> HEAT_NETWORK_MANAGER = 
+        new NetworkManager<>(HeatNetwork::new);
 
     public Industrium() {
         ModRegistry.register(
