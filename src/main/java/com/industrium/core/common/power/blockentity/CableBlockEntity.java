@@ -128,18 +128,4 @@ public class CableBlockEntity extends AbstractMachineBlockEntity implements IPow
             cableTier = VoltageTier.valueOf(tag.getString("CableTier"));
         }
     }
-    
-    @Override
-    protected void saveClientData(CompoundTag tag) {
-        super.saveClientData(tag);
-        tag.putLong("NetworkId", networkId);
-    }
-    
-    @Override
-    protected void loadClientData(CompoundTag tag) {
-        super.loadClientData(tag);
-        if (tag.contains("NetworkId")) {
-            networkId = tag.getLong("NetworkId");
-        }
-    }
 }

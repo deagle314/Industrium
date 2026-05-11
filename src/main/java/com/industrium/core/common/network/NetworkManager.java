@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 /**
  * Sole authority for graph topology. Handles node registration, unregistration,
  * merging, and splitting using BFS-based adjacency logic.
- * Updated for long IDs and optimized localized BFS.
+ * Optimized for incremental split/merge and long-based IDs.
  */
 public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetworkGraph<T>> {
     private final Map<Long, G> networks = new HashMap<>();
@@ -87,12 +87,14 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
             while (it.hasNext()) {
                 long otherId = it.next();
                 G otherGraph = networks.remove(otherId);
-                primaryGraph.onMerge(otherGraph);
-                for (BlockPos otherPos : otherGraph.getNodes()) {
-                    posToNetworkId.put(otherPos, primaryId);
-                    BlockEntity be = level.getBlockEntity(otherPos);
-                    if (be instanceof IIndustriumNode industriumNode) {
-                        industriumNode.onNetworkJoin(primaryId);
+                if (otherGraph != null) {
+                    primaryGraph.onMerge(otherGraph);
+                    for (BlockPos otherPos : otherGraph.getNodes()) {
+                        posToNetworkId.put(otherPos, primaryId);
+                        BlockEntity be = level.getBlockEntity(otherPos);
+                        if (be instanceof IIndustriumNode industriumNode) {
+                            industriumNode.onNetworkJoin(primaryId);
+                        }
                     }
                 }
             }
@@ -114,7 +116,7 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
             return;
         }
 
-        // Localized BFS for split check
+        // Potential split check
         List<BlockPos> neighbors = new ArrayList<>();
         for (Direction dir : Direction.values()) {
             BlockPos neighborPos = pos.relative(dir);
@@ -126,18 +128,50 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
 
         if (neighbors.size() <= 1) return;
 
-        // More than one neighbor, potential split
-        rebuildNetwork(node.getLevel(), networkId, graph);
+        // Localized BFS for split check
+        if (!areNeighborsConnected(neighbors, networkId)) {
+            rebuildNetwork(node.getLevel(), networkId, graph);
+        }
+    }
+
+    private boolean areNeighborsConnected(List<BlockPos> neighbors, long networkId) {
+        if (neighbors.size() <= 1) return true;
+        
+        Set<BlockPos> targets = new HashSet<>(neighbors);
+        BlockPos start = targets.iterator().next();
+        targets.remove(start);
+        
+        Queue<BlockPos> queue = new LinkedList<>();
+        Set<BlockPos> visited = new HashSet<>();
+        
+        queue.add(start);
+        visited.add(start);
+        
+        while (!queue.isEmpty()) {
+            BlockPos current = queue.poll();
+            for (Direction dir : Direction.values()) {
+                BlockPos next = current.relative(dir);
+                if (Objects.equals(posToNetworkId.get(next), networkId)) {
+                    if (targets.remove(next)) {
+                        if (targets.isEmpty()) return true;
+                    }
+                    if (visited.add(next)) {
+                        queue.add(next);
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private void rebuildNetwork(Level level, long oldId, G graph) {
         Set<BlockPos> remainingNodes = new HashSet<>(graph.getNodes());
         networks.remove(oldId);
-        // Clear old network IDs for nodes in this graph
         for (BlockPos pos : remainingNodes) {
             posToNetworkId.remove(pos);
         }
 
+        boolean first = true;
         while (!remainingNodes.isEmpty()) {
             BlockPos start = remainingNodes.iterator().next();
             Set<BlockPos> component = new HashSet<>();
@@ -159,7 +193,9 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
                 }
             }
 
-            long newId = nextId++;
+            long newId = first ? oldId : nextId++;
+            first = false;
+            
             G newGraph = graphFactory.apply(level, newId);
             for (BlockPos compPos : component) {
                 newGraph.addNode(compPos);

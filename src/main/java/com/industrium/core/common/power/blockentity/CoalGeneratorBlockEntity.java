@@ -24,7 +24,7 @@ public class CoalGeneratorBlockEntity extends AbstractMachineBlockEntity impleme
     
     public CoalGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(PowerModule.COAL_GENERATOR_BE.get(), pos, state);
-        this.energyModule = addModule(new EnergyModule(1000, VoltageTier.LV));
+        this.energyModule = addModule("energy", new EnergyModule(1000, VoltageTier.LV));
         this.generationRate = VoltageTier.LV.getTransferRate();
         this.fuelRemaining = 0;
         this.maxFuel = 1000;
@@ -44,6 +44,9 @@ public class CoalGeneratorBlockEntity extends AbstractMachineBlockEntity impleme
             isBurning = false;
             setStatus(MachineStatus.IDLE);
         }
+        
+        // Note: The actual energy distribution is handled by the PowerNetwork
+        // calling generate() on this block entity.
     }
     
     /**
@@ -51,7 +54,7 @@ public class CoalGeneratorBlockEntity extends AbstractMachineBlockEntity impleme
      */
     public void addFuel(long fuel) {
         fuelRemaining = Math.min(fuelRemaining + fuel, maxFuel);
-        setStatus(MachineStatus.RUNNING);
+        markClientSync();
     }
     
     /**
@@ -139,23 +142,5 @@ public class CoalGeneratorBlockEntity extends AbstractMachineBlockEntity impleme
         maxFuel = tag.getLong("MaxFuel");
         generationRate = tag.getLong("GenerationRate");
         isBurning = tag.getBoolean("IsBurning");
-    }
-    
-    @Override
-    protected void saveClientData(CompoundTag tag) {
-        super.saveClientData(tag);
-        tag.putLong("FuelRemaining", fuelRemaining);
-        tag.putBoolean("IsBurning", isBurning);
-    }
-    
-    @Override
-    protected void loadClientData(CompoundTag tag) {
-        super.loadClientData(tag);
-        if (tag.contains("FuelRemaining")) {
-            fuelRemaining = tag.getLong("FuelRemaining");
-        }
-        if (tag.contains("IsBurning")) {
-            isBurning = tag.getBoolean("IsBurning");
-        }
     }
 }

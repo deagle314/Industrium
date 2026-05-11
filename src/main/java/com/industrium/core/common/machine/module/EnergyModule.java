@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 
 /**
  * Module for handling energy storage and transfer.
+ * Implements IEnergyStorage for integration with the power system.
  */
 public class EnergyModule implements MachineModule, IEnergyStorage {
     private final long capacity;
@@ -15,6 +16,7 @@ public class EnergyModule implements MachineModule, IEnergyStorage {
     public EnergyModule(long capacity, VoltageTier tier) {
         this.capacity = capacity;
         this.tier = tier;
+        this.energy = 0;
     }
 
     @Override

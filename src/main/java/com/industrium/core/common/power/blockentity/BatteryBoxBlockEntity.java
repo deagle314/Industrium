@@ -19,7 +19,7 @@ public class BatteryBoxBlockEntity extends AbstractMachineBlockEntity implements
     
     public BatteryBoxBlockEntity(BlockPos pos, BlockState state) {
         super(PowerModule.BATTERY_BOX_BE.get(), pos, state);
-        this.energyModule = addModule(new EnergyModule(VoltageTier.LV.getTransferRate() * 10, VoltageTier.LV));
+        this.energyModule = addModule("energy", new EnergyModule(VoltageTier.LV.getTransferRate() * 1000, VoltageTier.LV));
         this.status = MachineStatus.IDLE;
     }
     
@@ -56,7 +56,7 @@ public class BatteryBoxBlockEntity extends AbstractMachineBlockEntity implements
     public long receiveEnergy(long amount, boolean simulate) {
         long received = energyModule.receiveEnergy(amount, simulate);
         if (!simulate && received > 0) {
-            setStatus(MachineStatus.RUNNING);
+            markClientSync();
         }
         return received;
     }
@@ -64,8 +64,8 @@ public class BatteryBoxBlockEntity extends AbstractMachineBlockEntity implements
     @Override
     public long extractEnergy(long amount, boolean simulate) {
         long extracted = energyModule.extractEnergy(amount, simulate);
-        if (!simulate && energyModule.getEnergy() <= 0) {
-            setStatus(MachineStatus.IDLE);
+        if (!simulate && extracted > 0) {
+            markClientSync();
         }
         return extracted;
     }

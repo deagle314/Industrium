@@ -2,13 +2,12 @@ package com.industrium.core.common.machine.module;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * Module for handling item storage.
+ * Compositional replacement for IInventory/Container.
  */
 public class InventoryModule implements MachineModule {
     private final NonNullList<ItemStack> items;
@@ -32,11 +31,14 @@ public class InventoryModule implements MachineModule {
     }
 
     public ItemStack getItem(int slot) {
+        if (slot < 0 || slot >= items.size()) return ItemStack.EMPTY;
         return items.get(slot);
     }
 
     public void setItem(int slot, ItemStack stack) {
-        items.set(slot, stack);
+        if (slot >= 0 && slot < items.size()) {
+            items.set(slot, stack);
+        }
     }
     
     public int getSize() {
@@ -45,5 +47,12 @@ public class InventoryModule implements MachineModule {
     
     public NonNullList<ItemStack> getItems() {
         return items;
+    }
+
+    public boolean isEmpty() {
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty()) return false;
+        }
+        return true;
     }
 }
