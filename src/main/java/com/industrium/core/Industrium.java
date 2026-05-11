@@ -4,6 +4,7 @@ import com.industrium.core.common.network.NetworkManager;
 import com.industrium.core.common.power.network.PowerNetwork;
 import com.industrium.core.common.network.heat.HeatNetwork;
 import com.industrium.core.common.network.rotation.RotationNetwork;
+import com.industrium.core.common.network.fluid.FluidNetwork;
 import com.industrium.core.api.network.IPowerNode;
 import com.industrium.core.api.network.IHeatNode;
 import com.industrium.core.api.network.IFluidNode;
