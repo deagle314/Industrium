@@ -15,6 +15,7 @@ public class NetworkEventHandler {
     public static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.level.isClientSide) {
             Industrium.POWER_NETWORK_MANAGER.tick();
+            Industrium.HEAT_NETWORK_MANAGER.tick();
         }
     }
 }
