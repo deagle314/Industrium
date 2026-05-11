@@ -1,6 +1,7 @@
 package com.industrium.core.common.network;
 
 import com.industrium.core.Industrium;
+import com.industrium.core.common.physics.IndustrialPhysicsKernel;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,10 +15,7 @@ public class NetworkEventHandler {
     @SubscribeEvent
     public static void onLevelTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.level.isClientSide) {
-            Industrium.POWER_NETWORK_MANAGER.tick();
-            Industrium.HEAT_NETWORK_MANAGER.tick();
-            Industrium.FLUID_NETWORK_MANAGER.tick();
-            Industrium.ROTATION_NETWORK_MANAGER.tick();
+            IndustrialPhysicsKernel.getInstance().tick();
         }
     }
 }
