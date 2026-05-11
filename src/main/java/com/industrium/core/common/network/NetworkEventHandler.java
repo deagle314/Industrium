@@ -16,6 +16,7 @@ public class NetworkEventHandler {
         if (event.phase == TickEvent.Phase.END && !event.level.isClientSide) {
             Industrium.POWER_NETWORK_MANAGER.tick();
             Industrium.HEAT_NETWORK_MANAGER.tick();
+            Industrium.FLUID_NETWORK_MANAGER.tick();
         }
     }
 }

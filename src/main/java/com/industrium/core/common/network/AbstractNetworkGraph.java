@@ -35,5 +35,11 @@ public abstract class AbstractNetworkGraph<T extends IIndustriumNode> {
         return Collections.unmodifiableSet(nodes);
     }
 
+    public void onMerge(AbstractNetworkGraph<T> other) {
+    }
+
+    public void onSplit(Set<BlockPos> newComponentNodes) {
+    }
+
     public abstract void tick();
 }

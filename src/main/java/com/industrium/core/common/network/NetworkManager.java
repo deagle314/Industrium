@@ -1,10 +1,12 @@
 package com.industrium.core.common.network;
 
 import com.industrium.core.api.network.IIndustriumNode;
+import com.industrium.core.api.network.IFluidNode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.fluids.FluidStack;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -22,6 +24,24 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
         this.graphFactory = graphFactory;
     }
 
+    private boolean isCompatible(T node, G graph) {
+        if (node instanceof IFluidNode fluidNode) {
+            FluidStack nodeFluid = fluidNode.getFluid();
+            if (nodeFluid.isEmpty()) return true;
+
+            for (BlockPos pos : graph.getNodes()) {
+                BlockEntity be = node.getLevel().getBlockEntity(pos);
+                if (be instanceof IFluidNode graphNode) {
+                    FluidStack graphFluid = graphNode.getFluid();
+                    if (!graphFluid.isEmpty() && !graphFluid.isFluidEqual(nodeFluid)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     public void registerNode(T node) {
         Level level = node.getLevel();
         BlockPos pos = node.getPos();
@@ -33,7 +53,10 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
             BlockPos neighborPos = pos.relative(dir);
             UUID networkId = posToNetworkId.get(neighborPos);
             if (networkId != null) {
-                neighboringNetworks.add(networkId);
+                G neighboringGraph = networks.get(networkId);
+                if (neighboringGraph != null && isCompatible(node, neighboringGraph)) {
+                    neighboringNetworks.add(networkId);
+                }
             }
         }
 
@@ -62,6 +85,7 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
             while (it.hasNext()) {
                 UUID otherId = it.next();
                 G otherGraph = networks.remove(otherId);
+                primaryGraph.onMerge(otherGraph);
                 for (BlockPos otherPos : otherGraph.getNodes()) {
                     primaryGraph.addNode(otherPos);
                     posToNetworkId.put(otherPos, primaryId);
@@ -130,6 +154,7 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
             // Let's just use a new one for simplicity and consistency.
             UUID actualId = UUID.randomUUID();
             G newGraph = graphFactory.apply(level, actualId);
+            newGraph.onSplit(component);
             for (BlockPos compPos : component) {
                 newGraph.addNode(compPos);
                 posToNetworkId.put(compPos, actualId);
