@@ -2,24 +2,23 @@ package com.industrium.core.common.power.blockentity;
 
 import com.industrium.core.Industrium;
 import com.industrium.core.api.network.IPowerNode;
+import com.industrium.core.api.network.SystemType;
 import com.industrium.core.api.power.VoltageTier;
-import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
+import com.industrium.core.common.machine.AbstractMachineBlockEntity;
 import com.industrium.core.common.registry.PowerModule;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.UUID;
-
 /**
  * Refactored Cable Block Entity - now a thin wrapper for the Network system.
  * Handles power connections and network membership via NetworkManager.
  */
-public class CableBlockEntity extends BaseMachineBlockEntity implements IPowerNode {
+public class CableBlockEntity extends AbstractMachineBlockEntity implements IPowerNode {
     
     private VoltageTier cableTier = VoltageTier.LV;
-    private UUID networkId = null;
+    private long networkId = -1;
     
     public CableBlockEntity(BlockPos pos, BlockState state) {
         super(PowerModule.POWER_CABLE_BE.get(), pos, state);
@@ -52,12 +51,12 @@ public class CableBlockEntity extends BaseMachineBlockEntity implements IPowerNo
     }
     
     @Override
-    public UUID getNetworkId() {
+    public long getNetworkId() {
         return networkId;
     }
     
     @Override
-    public void setNetworkId(UUID id) {
+    public void setNetworkId(long id) {
         this.networkId = id;
         markClientSync();
     }
@@ -65,6 +64,46 @@ public class CableBlockEntity extends BaseMachineBlockEntity implements IPowerNo
     @Override
     public VoltageTier getTier() {
         return cableTier;
+    }
+    
+    @Override
+    public SystemType getSystemType() {
+        return SystemType.POWER;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0.1;
+    }
+
+    @Override
+    public double getConductivity() {
+        return 1.0;
+    }
+
+    @Override
+    public double getInertia() {
+        return 0.0;
+    }
+
+    @Override
+    public long getEnergy() {
+        return 0;
+    }
+
+    @Override
+    public long getCapacity() {
+        return 0;
+    }
+
+    @Override
+    public long receive(long maxReceive, boolean simulate) {
+        return 0;
+    }
+
+    @Override
+    public long extract(long maxExtract, boolean simulate) {
+        return 0;
     }
     
     /**
@@ -77,18 +116,14 @@ public class CableBlockEntity extends BaseMachineBlockEntity implements IPowerNo
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        if (networkId != null) {
-            tag.putUUID("NetworkId", networkId);
-        }
+        tag.putLong("NetworkId", networkId);
         tag.putString("CableTier", cableTier.name());
     }
     
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        if (tag.hasUUID("NetworkId")) {
-            networkId = tag.getUUID("NetworkId");
-        }
+        networkId = tag.getLong("NetworkId");
         if (tag.contains("CableTier")) {
             cableTier = VoltageTier.valueOf(tag.getString("CableTier"));
         }
@@ -97,16 +132,14 @@ public class CableBlockEntity extends BaseMachineBlockEntity implements IPowerNo
     @Override
     protected void saveClientData(CompoundTag tag) {
         super.saveClientData(tag);
-        if (networkId != null) {
-            tag.putUUID("NetworkId", networkId);
-        }
+        tag.putLong("NetworkId", networkId);
     }
     
     @Override
     protected void loadClientData(CompoundTag tag) {
         super.loadClientData(tag);
-        if (tag.hasUUID("NetworkId")) {
-            networkId = tag.getUUID("NetworkId");
+        if (tag.contains("NetworkId")) {
+            networkId = tag.getLong("NetworkId");
         }
     }
 }

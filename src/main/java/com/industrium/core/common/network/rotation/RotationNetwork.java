@@ -10,21 +10,18 @@ import java.util.*;
 
 /**
  * Simulation engine for mechanical rotation.
+ * Updated to use long IDs and Level-aware constructor.
  */
 public class RotationNetwork extends AbstractNetworkGraph<IRotationNode> {
-    private final Level level;
     private double currentRPM = 0;
     private final Map<BlockPos, IRotationNode> nodeInstanceCache = new HashMap<>();
 
-    public RotationNetwork(Level level, UUID id) {
-        super(id);
-        this.level = level;
+    public RotationNetwork(Level level, long id) {
+        super(level, id);
     }
 
     @Override
-    public void addNode(BlockPos pos) {
-        if (nodes.contains(pos)) return;
-        
+    protected void onNodeAdded(BlockPos pos) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof IRotationNode node) {
             double nodeInertia = node.getInertia();
@@ -35,14 +32,11 @@ public class RotationNetwork extends AbstractNetworkGraph<IRotationNode> {
                 currentRPM = (currentRPM * totalInertia + nodeRPM * nodeInertia) / (totalInertia + nodeInertia);
             }
         }
-        
-        super.addNode(pos);
         nodeInstanceCache.clear();
     }
 
     @Override
-    public void removeNode(BlockPos pos) {
-        super.removeNode(pos);
+    protected void onNodeRemoved(BlockPos pos) {
         nodeInstanceCache.clear();
     }
 
@@ -76,6 +70,8 @@ public class RotationNetwork extends AbstractNetworkGraph<IRotationNode> {
                 this.currentRPM = (this.currentRPM * thisInertia + otherRotation.currentRPM * otherInertia) / (thisInertia + otherInertia);
             }
         }
+        super.onMerge(other);
+        nodeInstanceCache.clear();
     }
 
     @Override

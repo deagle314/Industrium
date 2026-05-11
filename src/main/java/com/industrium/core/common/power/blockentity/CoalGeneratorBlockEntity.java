@@ -1,20 +1,22 @@
 package com.industrium.core.common.power.blockentity;
 
-import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
+import com.industrium.core.api.power.IGenerator;
+import com.industrium.core.api.power.VoltageTier;
+import com.industrium.core.common.machine.AbstractMachineBlockEntity;
+import com.industrium.core.common.machine.module.EnergyModule;
 import com.industrium.core.common.registry.PowerModule;
-import com.industrium.core.api.power.*;
+import com.industrium.core.common.system.MachineStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Coal Generator block entity.
  * Burns fuel to generate power.
  */
-public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements IGenerator {
+public class CoalGeneratorBlockEntity extends AbstractMachineBlockEntity implements IGenerator {
     
-    private VoltageTier voltageTier;
+    private final EnergyModule energyModule;
     private long generationRate;
     private long fuelRemaining;
     private long maxFuel;
@@ -22,11 +24,11 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
     
     public CoalGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(PowerModule.COAL_GENERATOR_BE.get(), pos, state);
-        this.voltageTier = VoltageTier.LV;
+        this.energyModule = addModule(new EnergyModule(1000, VoltageTier.LV));
         this.generationRate = VoltageTier.LV.getTransferRate();
         this.fuelRemaining = 0;
         this.maxFuel = 1000;
-        this.status = com.industrium.core.common.system.MachineStatus.IDLE;
+        this.status = MachineStatus.IDLE;
     }
     
     @Override
@@ -37,10 +39,10 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
         if (fuelRemaining > 0) {
             fuelRemaining--;
             isBurning = true;
-            setStatus(com.industrium.core.common.system.MachineStatus.RUNNING);
+            setStatus(MachineStatus.RUNNING);
         } else {
             isBurning = false;
-            setStatus(com.industrium.core.common.system.MachineStatus.IDLE);
+            setStatus(MachineStatus.IDLE);
         }
     }
     
@@ -49,7 +51,7 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
      */
     public void addFuel(long fuel) {
         fuelRemaining = Math.min(fuelRemaining + fuel, maxFuel);
-        setStatus(com.industrium.core.common.system.MachineStatus.RUNNING);
+        setStatus(MachineStatus.RUNNING);
     }
     
     /**
@@ -80,7 +82,7 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
         return new String[] {
             "Fuel: " + fuelRemaining + "/" + maxFuel,
             "Gen: " + generationRate + " FE/t",
-            "Tier: " + voltageTier.name()
+            "Tier: " + energyModule.getVoltageTier().name()
         };
     }
     
@@ -98,7 +100,7 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
     
     @Override
     public VoltageTier getOutputTier() {
-        return voltageTier;
+        return energyModule.getVoltageTier();
     }
     
     @Override
@@ -109,6 +111,16 @@ public class CoalGeneratorBlockEntity extends BaseMachineBlockEntity implements 
     @Override
     public String getFuelType() {
         return "coal";
+    }
+
+    @Override
+    public long getFuelRemaining() {
+        return fuelRemaining;
+    }
+
+    @Override
+    public long getMaxFuel() {
+        return maxFuel;
     }
     
     @Override

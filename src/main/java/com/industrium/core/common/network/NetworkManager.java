@@ -14,13 +14,15 @@ import java.util.function.BiFunction;
 /**
  * Sole authority for graph topology. Handles node registration, unregistration,
  * merging, and splitting using BFS-based adjacency logic.
+ * Updated for long IDs and optimized localized BFS.
  */
 public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetworkGraph<T>> {
-    private final Map<UUID, G> networks = new HashMap<>();
-    private final Map<BlockPos, UUID> posToNetworkId = new HashMap<>();
-    private final BiFunction<Level, UUID, G> graphFactory;
+    private final Map<Long, G> networks = new HashMap<>();
+    private final Map<BlockPos, Long> posToNetworkId = new HashMap<>();
+    private final BiFunction<Level, Long, G> graphFactory;
+    private long nextId = 1;
 
-    public NetworkManager(BiFunction<Level, UUID, G> graphFactory) {
+    public NetworkManager(BiFunction<Level, Long, G> graphFactory) {
         this.graphFactory = graphFactory;
     }
 
@@ -48,11 +50,11 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
         
         if (posToNetworkId.containsKey(pos)) return;
 
-        Set<UUID> neighboringNetworks = new HashSet<>();
+        Set<Long> neighboringNetworks = new HashSet<>();
         for (Direction dir : Direction.values()) {
             BlockPos neighborPos = pos.relative(dir);
-            UUID networkId = posToNetworkId.get(neighborPos);
-            if (networkId != null) {
+            Long networkId = posToNetworkId.get(neighborPos);
+            if (networkId != null && networkId != -1) {
                 G neighboringGraph = networks.get(networkId);
                 if (neighboringGraph != null && isCompatible(node, neighboringGraph)) {
                     neighboringNetworks.add(networkId);
@@ -61,37 +63,36 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
         }
 
         if (neighboringNetworks.isEmpty()) {
-            UUID newId = UUID.randomUUID();
+            long newId = nextId++;
             G graph = graphFactory.apply(level, newId);
             graph.addNode(pos);
             networks.put(newId, graph);
             posToNetworkId.put(pos, newId);
-            node.setNetworkId(newId);
+            node.onNetworkJoin(newId);
         } else if (neighboringNetworks.size() == 1) {
-            UUID networkId = neighboringNetworks.iterator().next();
+            long networkId = neighboringNetworks.iterator().next();
             G graph = networks.get(networkId);
             graph.addNode(pos);
             posToNetworkId.put(pos, networkId);
-            node.setNetworkId(networkId);
+            node.onNetworkJoin(networkId);
         } else {
             // Merge
-            Iterator<UUID> it = neighboringNetworks.iterator();
-            UUID primaryId = it.next();
+            Iterator<Long> it = neighboringNetworks.iterator();
+            long primaryId = it.next();
             G primaryGraph = networks.get(primaryId);
             primaryGraph.addNode(pos);
             posToNetworkId.put(pos, primaryId);
-            node.setNetworkId(primaryId);
+            node.onNetworkJoin(primaryId);
 
             while (it.hasNext()) {
-                UUID otherId = it.next();
+                long otherId = it.next();
                 G otherGraph = networks.remove(otherId);
                 primaryGraph.onMerge(otherGraph);
                 for (BlockPos otherPos : otherGraph.getNodes()) {
-                    primaryGraph.addNode(otherPos);
                     posToNetworkId.put(otherPos, primaryId);
                     BlockEntity be = level.getBlockEntity(otherPos);
-                    if (be instanceof IIndustriumNode) {
-                        ((IIndustriumNode) be).setNetworkId(primaryId);
+                    if (be instanceof IIndustriumNode industriumNode) {
+                        industriumNode.onNetworkJoin(primaryId);
                     }
                 }
             }
@@ -100,33 +101,42 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
 
     public void unregisterNode(T node) {
         BlockPos pos = node.getPos();
-        UUID networkId = posToNetworkId.remove(pos);
-        if (networkId == null) return;
+        Long networkId = posToNetworkId.remove(pos);
+        if (networkId == null || networkId == -1) return;
 
         G graph = networks.get(networkId);
+        if (graph == null) return;
         graph.removeNode(pos);
-        node.setNetworkId(null);
+        node.onNetworkLeave(networkId);
 
         if (graph.getNodes().isEmpty()) {
             networks.remove(networkId);
             return;
         }
 
-        // Split check
-        Level level = node.getLevel();
+        // Localized BFS for split check
         List<BlockPos> neighbors = new ArrayList<>();
         for (Direction dir : Direction.values()) {
             BlockPos neighborPos = pos.relative(dir);
-            if (posToNetworkId.get(neighborPos) == networkId) {
+            Long neighborNetworkId = posToNetworkId.get(neighborPos);
+            if (neighborNetworkId != null && neighborNetworkId.equals(networkId)) {
                 neighbors.add(neighborPos);
             }
         }
 
         if (neighbors.size() <= 1) return;
 
-        // BFS to find components
+        // More than one neighbor, potential split
+        rebuildNetwork(node.getLevel(), networkId, graph);
+    }
+
+    private void rebuildNetwork(Level level, long oldId, G graph) {
         Set<BlockPos> remainingNodes = new HashSet<>(graph.getNodes());
-        networks.remove(networkId);
+        networks.remove(oldId);
+        // Clear old network IDs for nodes in this graph
+        for (BlockPos pos : remainingNodes) {
+            posToNetworkId.remove(pos);
+        }
 
         while (!remainingNodes.isEmpty()) {
             BlockPos start = remainingNodes.iterator().next();
@@ -149,30 +159,26 @@ public class NetworkManager<T extends IIndustriumNode, G extends AbstractNetwork
                 }
             }
 
-            UUID newId = (component.size() == graph.getNodes().size() - 1) ? networkId : UUID.randomUUID();
-            // Actually always newId is safer or we reuse the old one for one of the components.
-            // Let's just use a new one for simplicity and consistency.
-            UUID actualId = UUID.randomUUID();
-            G newGraph = graphFactory.apply(level, actualId);
-            newGraph.onSplit(component);
+            long newId = nextId++;
+            G newGraph = graphFactory.apply(level, newId);
             for (BlockPos compPos : component) {
                 newGraph.addNode(compPos);
-                posToNetworkId.put(compPos, actualId);
+                posToNetworkId.put(compPos, newId);
                 BlockEntity be = level.getBlockEntity(compPos);
-                if (be instanceof IIndustriumNode) {
-                    ((IIndustriumNode) be).setNetworkId(actualId);
+                if (be instanceof IIndustriumNode industriumNode) {
+                    industriumNode.onNetworkJoin(newId);
                 }
             }
-            networks.put(actualId, newGraph);
+            networks.put(newId, newGraph);
         }
     }
 
-    public G getNetwork(UUID id) {
+    public G getNetwork(long id) {
         return networks.get(id);
     }
 
     public void tick() {
-        for (G graph : networks.values()) {
+        for (G graph : new ArrayList<>(networks.values())) {
             graph.tick();
         }
     }

@@ -1,31 +1,26 @@
 package com.industrium.core.common.power.blockentity;
 
-import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
+import com.industrium.core.api.power.IEnergyStorage;
+import com.industrium.core.api.power.VoltageTier;
+import com.industrium.core.common.machine.AbstractMachineBlockEntity;
+import com.industrium.core.common.machine.module.EnergyModule;
 import com.industrium.core.common.registry.PowerModule;
-import com.industrium.core.api.power.*;
+import com.industrium.core.common.system.MachineStatus;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Battery Box block entity.
  * Stores power and balances the network.
  */
-public class BatteryBoxBlockEntity extends BaseMachineBlockEntity implements IEnergyStorage {
+public class BatteryBoxBlockEntity extends AbstractMachineBlockEntity implements IEnergyStorage {
     
-    private VoltageTier voltageTier;
-    private long maxEnergy;
-    private long energy;
-    private long transferRate;
+    private final EnergyModule energyModule;
     
     public BatteryBoxBlockEntity(BlockPos pos, BlockState state) {
         super(PowerModule.BATTERY_BOX_BE.get(), pos, state);
-        this.voltageTier = VoltageTier.LV;
-        this.maxEnergy = VoltageTier.LV.getTransferRate() * 10;
-        this.energy = 0;
-        this.transferRate = voltageTier.getTransferRate();
-        this.status = com.industrium.core.common.system.MachineStatus.IDLE;
+        this.energyModule = addModule(new EnergyModule(VoltageTier.LV.getTransferRate() * 10, VoltageTier.LV));
+        this.status = MachineStatus.IDLE;
     }
     
     @Override
@@ -33,10 +28,10 @@ public class BatteryBoxBlockEntity extends BaseMachineBlockEntity implements IEn
         super.tickServer();
         
         // Simple charge logic - if has energy, mark as running
-        if (energy > 0) {
-            setStatus(com.industrium.core.common.system.MachineStatus.RUNNING);
+        if (energyModule.getEnergy() > 0) {
+            setStatus(MachineStatus.RUNNING);
         } else {
-            setStatus(com.industrium.core.common.system.MachineStatus.IDLE);
+            setStatus(MachineStatus.IDLE);
         }
     }
     
@@ -44,93 +39,57 @@ public class BatteryBoxBlockEntity extends BaseMachineBlockEntity implements IEn
     
     @Override
     public long getEnergy() {
-        return energy;
+        return energyModule.getEnergy();
     }
     
     @Override
     public long getMaxEnergy() {
-        return maxEnergy;
+        return energyModule.getMaxEnergy();
     }
     
     @Override
     public VoltageTier getVoltageTier() {
-        return voltageTier;
+        return energyModule.getVoltageTier();
     }
     
     @Override
     public long receiveEnergy(long amount, boolean simulate) {
-        long toReceive = Math.min(amount, maxEnergy - energy);
-        if (!simulate) {
-            energy += toReceive;
-            setStatus(com.industrium.core.common.system.MachineStatus.RUNNING);
+        long received = energyModule.receiveEnergy(amount, simulate);
+        if (!simulate && received > 0) {
+            setStatus(MachineStatus.RUNNING);
         }
-        return toReceive;
+        return received;
     }
     
     @Override
     public long extractEnergy(long amount, boolean simulate) {
-        long toExtract = Math.min(amount, energy);
-        if (!simulate) {
-            energy -= toExtract;
-            if (energy <= 0) {
-                setStatus(com.industrium.core.common.system.MachineStatus.IDLE);
-            }
+        long extracted = energyModule.extractEnergy(amount, simulate);
+        if (!simulate && energyModule.getEnergy() <= 0) {
+            setStatus(MachineStatus.IDLE);
         }
-        return toExtract;
+        return extracted;
     }
     
     @Override
     public boolean canAccept(VoltageTier other) {
-        return voltageTier.canAccept(other);
+        return energyModule.canAccept(other);
     }
     
     @Override
     public boolean canExtractTo(VoltageTier other) {
-        return voltageTier.canAccept(other);
+        return energyModule.canExtractTo(other);
     }
     
     @Override
     public long getTransferRate() {
-        return transferRate;
-    }
-    
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putLong("Energy", energy);
-        tag.putLong("MaxEnergy", maxEnergy);
-        tag.putString("VoltageTier", voltageTier.name());
-        tag.putLong("TransferRate", transferRate);
-    }
-    
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        energy = tag.getLong("Energy");
-        maxEnergy = tag.getLong("MaxEnergy");
-        voltageTier = VoltageTier.valueOf(tag.getString("VoltageTier"));
-        transferRate = tag.getLong("TransferRate");
-    }
-    
-    @Override
-    protected void saveClientData(CompoundTag tag) {
-        super.saveClientData(tag);
-        tag.putLong("Energy", energy);
-    }
-    
-    @Override
-    protected void loadClientData(CompoundTag tag) {
-        super.loadClientData(tag);
-        if (tag.contains("Energy")) {
-            energy = tag.getLong("Energy");
-        }
+        return energyModule.getTransferRate();
     }
     
     /**
      * Gets status text for player interaction.
      */
     public String getStatusText() {
-        return energy + " / " + maxEnergy + " FE (" + voltageTier.name() + ")";
+        return energyModule.getEnergy() + " / " + energyModule.getMaxEnergy() + " FE (" + energyModule.getVoltageTier().name() + ")";
     }
     
     /**
@@ -138,9 +97,9 @@ public class BatteryBoxBlockEntity extends BaseMachineBlockEntity implements IEn
      */
     public String[] getStats() {
         return new String[] {
-            voltageTier.name() + " Battery Box",
-            "Energy: " + energy + " / " + maxEnergy + " FE",
-            "Transfer: " + transferRate + " FE/t",
+            energyModule.getVoltageTier().name() + " Battery Box",
+            "Energy: " + energyModule.getEnergy() + " / " + energyModule.getMaxEnergy() + " FE",
+            "Transfer: " + energyModule.getTransferRate() + " FE/t",
             "Status: " + getStatus().name()
         };
     }

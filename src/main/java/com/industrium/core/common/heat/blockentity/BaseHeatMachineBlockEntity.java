@@ -8,15 +8,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.UUID;
-
 /**
  * Base block entity for heat-based machines.
  */
 public abstract class BaseHeatMachineBlockEntity extends BaseMachineBlockEntity implements IHeatNode, IHeatContainer {
     protected double heat;
     protected double temperature = 20.0;
-    protected UUID networkId;
+    protected long networkId = -1;
 
     public BaseHeatMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -114,12 +112,12 @@ public abstract class BaseHeatMachineBlockEntity extends BaseMachineBlockEntity 
     }
 
     @Override
-    public UUID getNetworkId() {
+    public long getNetworkId() {
         return networkId;
     }
 
     @Override
-    public void setNetworkId(UUID id) {
+    public void setNetworkId(long id) {
         this.networkId = id;
     }
 
@@ -127,9 +125,7 @@ public abstract class BaseHeatMachineBlockEntity extends BaseMachineBlockEntity 
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.putDouble("Heat", heat);
-        if (networkId != null) {
-            tag.putUUID("NetworkId", networkId);
-        }
+        tag.putLong("NetworkId", networkId);
     }
 
     @Override
@@ -137,8 +133,8 @@ public abstract class BaseHeatMachineBlockEntity extends BaseMachineBlockEntity 
         super.load(tag);
         this.heat = tag.getDouble("Heat");
         this.temperature = calculateTemperature(this.heat);
-        if (tag.hasUUID("NetworkId")) {
-            this.networkId = tag.getUUID("NetworkId");
+        if (tag.contains("NetworkId")) {
+            this.networkId = tag.getLong("NetworkId");
         }
     }
 }
