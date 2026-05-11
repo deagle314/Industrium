@@ -1,52 +1,69 @@
 package com.industrium.core.common.power.blockentity;
 
+import com.industrium.core.Industrium;
+import com.industrium.core.api.network.IPowerNode;
+import com.industrium.core.api.power.VoltageTier;
 import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
 import com.industrium.core.common.registry.PowerModule;
-import com.industrium.core.api.power.VoltageTier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.UUID;
+
 /**
- * Cable Block Entity - handles power connections and network membership.
- * Each cable segment tracks connected networks for efficient power transfer.
+ * Refactored Cable Block Entity - now a thin wrapper for the Network system.
+ * Handles power connections and network membership via NetworkManager.
  */
-public class CableBlockEntity extends BaseMachineBlockEntity {
+public class CableBlockEntity extends BaseMachineBlockEntity implements IPowerNode {
     
     private VoltageTier cableTier = VoltageTier.LV;
-    private String networkId = "";
-    private boolean isConnected = false;
-    private int connectionCount = 0;
-    
-    // For network recalculation
-    private boolean needsNetworkUpdate = false;
+    private UUID networkId = null;
     
     public CableBlockEntity(BlockPos pos, BlockState state) {
         super(PowerModule.POWER_CABLE_BE.get(), pos, state);
     }
     
-    /**
-     * Sets the network this cable belongs to.
-     */
-    public void setNetwork(String networkId) {
-        if (!this.networkId.equals(networkId)) {
-            this.networkId = networkId;
-            isConnected = true;
-            markClientSync();
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide) {
+            Industrium.POWER_NETWORK_MANAGER.registerNode(this);
         }
     }
     
-    /**
-     * Gets the connected network ID.
-     */
-    public String getNetwork() {
+    @Override
+    public void setRemoved() {
+        if (level != null && !level.isClientSide) {
+            Industrium.POWER_NETWORK_MANAGER.unregisterNode(this);
+        }
+        super.setRemoved();
+    }
+    
+    @Override
+    public BlockPos getPos() {
+        return worldPosition;
+    }
+    
+    @Override
+    public Level getLevel() {
+        return level;
+    }
+    
+    @Override
+    public UUID getNetworkId() {
         return networkId;
     }
     
-    /**
-     * Gets cable tier.
-     */
-    public VoltageTier getCableTier() {
+    @Override
+    public void setNetworkId(UUID id) {
+        this.networkId = id;
+        markClientSync();
+    }
+    
+    @Override
+    public VoltageTier getTier() {
         return cableTier;
     }
     
@@ -57,79 +74,39 @@ public class CableBlockEntity extends BaseMachineBlockEntity {
         this.cableTier = tier;
     }
     
-    /**
-     * Checks if connected to network.
-     */
-    public boolean isConnected() {
-        return isConnected;
-    }
-    
-    /**
-     * Gets connection count.
-     */
-    public int getConnectionCount() {
-        return connectionCount;
-    }
-    
-    /**
-     * Sets connection count.
-     */
-    public void setConnectionCount(int count) {
-        this.connectionCount = count;
-    }
-    
-    /**
-     * Marks for network recalculation.
-     */
-    public void markNetworkUpdate() {
-        this.needsNetworkUpdate = true;
-        markClientSync();
-    }
-    
-    /**
-     * Clears network update flag.
-     */
-    public void clearNetworkUpdate() {
-        this.needsNetworkUpdate = false;
-    }
-    
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.putString("NetworkId", networkId);
+        if (networkId != null) {
+            tag.putUUID("NetworkId", networkId);
+        }
         tag.putString("CableTier", cableTier.name());
-        tag.putBoolean("IsConnected", isConnected);
-        tag.putInt("ConnectionCount", connectionCount);
     }
     
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        networkId = tag.getString("NetworkId");
-        cableTier = VoltageTier.valueOf(tag.getString("CableTier"));
-        isConnected = tag.getBoolean("IsConnected");
-        connectionCount = tag.getInt("ConnectionCount");
+        if (tag.hasUUID("NetworkId")) {
+            networkId = tag.getUUID("NetworkId");
+        }
+        if (tag.contains("CableTier")) {
+            cableTier = VoltageTier.valueOf(tag.getString("CableTier"));
+        }
     }
     
     @Override
     protected void saveClientData(CompoundTag tag) {
         super.saveClientData(tag);
-        tag.putString("NetworkId", networkId);
-        tag.putBoolean("IsConnected", isConnected);
-        tag.putInt("ConnectionCount", connectionCount);
+        if (networkId != null) {
+            tag.putUUID("NetworkId", networkId);
+        }
     }
     
     @Override
     protected void loadClientData(CompoundTag tag) {
         super.loadClientData(tag);
-        if (tag.contains("NetworkId")) {
-            networkId = tag.getString("NetworkId");
-        }
-        if (tag.contains("IsConnected")) {
-            isConnected = tag.getBoolean("IsConnected");
-        }
-        if (tag.contains("ConnectionCount")) {
-            connectionCount = tag.getInt("ConnectionCount");
+        if (tag.hasUUID("NetworkId")) {
+            networkId = tag.getUUID("NetworkId");
         }
     }
 }
