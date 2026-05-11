@@ -17,6 +17,7 @@ public class NetworkEventHandler {
             Industrium.POWER_NETWORK_MANAGER.tick();
             Industrium.HEAT_NETWORK_MANAGER.tick();
             Industrium.FLUID_NETWORK_MANAGER.tick();
+            Industrium.ROTATION_NETWORK_MANAGER.tick();
         }
     }
 }
