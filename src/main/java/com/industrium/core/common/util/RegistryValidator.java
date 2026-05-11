@@ -16,33 +16,44 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RegistryValidator {
+/**
+ * Validates the consistency and integrity of the Industrium mod registry.
+ * 
+ * Performs comprehensive checks including:
+ * <ul>
+ *   <li>Registry consistency between blocks, items, and block entities</li>
+ *   <li>BlockEntity type to block name mappings</li>
+ *   <li>Recipe file existence</li>
+ *   <li>Resource file integrity (blockstates, models, textures)</li>
+ *   <li>Creative tab configuration</li>
+ * </ul>
+ */
+public final class RegistryValidator {
     private static final Logger LOGGER = LogManager.getLogger();
     
     private static final String ASSETS_PATH = "src/main/resources/assets/" + Industrium.MOD_ID;
     private static final String DATA_PATH = "src/main/resources/data/" + Industrium.MOD_ID;
     
-    private static final List<String> errors = new ArrayList<>();
-    private static final List<String> warnings = new ArrayList<>();
-
+    private RegistryValidator() {} // Prevent instantiation
+    
     public static void validate() {
         LOGGER.info("========================================");
         LOGGER.info("Starting Industrium Validation Suite...");
         LOGGER.info("========================================");
         
-        errors.clear();
-        warnings.clear();
+        List<String> errors = new ArrayList<>();
+        List<String> warnings = new ArrayList<>();
         
-        checkRegistryConsistency();
-        checkBlockEntityMappings();
-        checkRecipeExistence();
-        checkResourceIntegrity();
-        checkCreativeTabIntegrity();
+        checkRegistryConsistency(errors, warnings);
+        checkBlockEntityMappings(errors);
+        checkRecipeExistence(warnings);
+        checkResourceIntegrity(warnings);
+        checkCreativeTabIntegrity(errors);
         
-        printResults();
+        printResults(errors, warnings);
     }
 
-    private static void checkRegistryConsistency() {
+    private static void checkRegistryConsistency(List<String> errors, List<String> warnings) {
         LOGGER.info("[1/5] Checking registry consistency...");
         
         Set<ResourceLocation> blockIds = ModRegistry.BLOCKS.getEntries().stream()
@@ -97,7 +108,7 @@ public class RegistryValidator {
         LOGGER.info("  - BlockEntities registered: " + blockEntityIds.size());
     }
 
-    private static void checkBlockEntityMappings() {
+    private static void checkBlockEntityMappings(List<String> errors) {
         LOGGER.info("[2/5] Checking BlockEntity type mappings...");
         
         for (RegistryObject<BlockEntityType<?>> beRO : ModRegistry.BLOCK_ENTITIES.getEntries()) {
@@ -116,7 +127,7 @@ public class RegistryValidator {
         LOGGER.info("  - BlockEntity mappings validated");
     }
 
-    private static void checkRecipeExistence() {
+    private static void checkRecipeExistence(List<String> warnings) {
         LOGGER.info("[3/5] Checking recipe existence...");
         
         File recipesDir = new File(DATA_PATH + "/recipes");
@@ -135,20 +146,19 @@ public class RegistryValidator {
         LOGGER.info("  - Recipe files found: " + availableRecipes.size());
     }
 
-    private static void checkResourceIntegrity() {
+    private static void checkResourceIntegrity(List<String> warnings) {
         LOGGER.info("[4/5] Checking resource integrity...");
         
         int blocksChecked = 0;
         int itemsChecked = 0;
-        int errorsBeforeTextureCheck = errors.size();
         
         for (RegistryObject<Block> blockRO : ModRegistry.BLOCKS.getEntries()) {
             String path = blockRO.getId().getPath();
             blocksChecked++;
             
-            checkFileExists(ASSETS_PATH + "/blockstates/" + path + ".json", "Blockstate", path);
-            checkFileExists(ASSETS_PATH + "/models/block/" + path + ".json", "Block model", path);
-            checkFileExists(ASSETS_PATH + "/textures/block/" + path + ".png", "Block texture", path);
+            checkFileExists(ASSETS_PATH + "/blockstates/" + path + ".json", "Blockstate", path, warnings);
+            checkFileExists(ASSETS_PATH + "/models/block/" + path + ".json", "Block model", path, warnings);
+            checkFileExists(ASSETS_PATH + "/textures/block/" + path + ".png", "Block texture", path, warnings);
         }
         
         for (RegistryObject<Item> itemRO : ModRegistry.ITEMS.getEntries()) {
@@ -156,17 +166,17 @@ public class RegistryValidator {
             itemsChecked++;
             
             if (!(itemRO.get() instanceof BlockItem)) {
-                checkFileExists(ASSETS_PATH + "/textures/item/" + path + ".png", "Item texture", path);
+                checkFileExists(ASSETS_PATH + "/textures/item/" + path + ".png", "Item texture", path, warnings);
             }
             
-            checkFileExists(ASSETS_PATH + "/models/item/" + path + ".json", "Item model", path);
+            checkFileExists(ASSETS_PATH + "/models/item/" + path + ".json", "Item model", path, warnings);
         }
         
         LOGGER.info("  - Blocks checked: " + blocksChecked);
         LOGGER.info("  - Items checked: " + itemsChecked);
     }
 
-    private static void checkCreativeTabIntegrity() {
+    private static void checkCreativeTabIntegrity(List<String> errors) {
         LOGGER.info("[5/5] Checking creative tab integrity...");
         
         try {
@@ -186,14 +196,14 @@ public class RegistryValidator {
         LOGGER.info("  - Creative tab validated");
     }
 
-    private static void checkFileExists(String filePath, String description, String itemName) {
+    private static void checkFileExists(String filePath, String description, String itemName, List<String> warnings) {
         File file = new File(filePath);
         if (!file.exists()) {
             warnings.add(description + " missing for '" + itemName + "': " + filePath);
         }
     }
 
-    private static void printResults() {
+    private static void printResults(List<String> errors, List<String> warnings) {
         LOGGER.info("========================================");
         
         if (errors.isEmpty() && warnings.isEmpty()) {
@@ -215,13 +225,5 @@ public class RegistryValidator {
         }
         
         LOGGER.info("========================================");
-    }
-    
-    public static int getErrorCount() {
-        return errors.size();
-    }
-    
-    public static int getWarningCount() {
-        return warnings.size();
     }
 }

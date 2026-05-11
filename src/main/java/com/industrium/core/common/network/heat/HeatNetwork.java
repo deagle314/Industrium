@@ -115,7 +115,8 @@ public class HeatNetwork extends AbstractNetworkGraph<IHeatNode> {
             }
 
             // 2. Ambient Exchange (Newton's Law of Cooling)
-            double ambientTemp = level.getBiome(posA).get().getTemperature(posA) * 20.0;
+            // Use the modern Forge 1.20.1 biome temperature API
+            double ambientTemp = level.getBiome(posA).get().value().getBaseTemperature() * 20.0;
             double h = AMBIENT_TRANSFER_COEFFICIENT * nodeA.getConductivityModifier();
             double ambientFlux = h * (ambientTemp - nodeA.getTemperature());
             

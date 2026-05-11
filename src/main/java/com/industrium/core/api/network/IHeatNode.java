@@ -1,5 +1,8 @@
 package com.industrium.core.api.network;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+
 /**
  * Specialized node for heat transfer networks.
  * 
@@ -11,16 +14,9 @@ public interface IHeatNode extends IIndustriumNode, IPhysicalNode {
     /**
      * Gets the current temperature of this node.
      * 
-     * @return Temperature in Celsius (or Kelvin depending on configuration)
+     * @return Temperature in Celsius
      */
     double getTemperature();
-
-    /**
-     * Sets the temperature of this node.
-     * 
-     * @param temperature The new temperature
-     */
-    void setTemperature(double temperature);
 
     /**
      * Gets the thermal heat capacity of this node.
@@ -32,37 +28,68 @@ public interface IHeatNode extends IIndustriumNode, IPhysicalNode {
     double getHeatCapacity();
 
     /**
+     * Gets the current heat content of this node.
+     * 
+     * @return Heat content in HU
+     */
+    default double getHeat() {
+        return getTemperature() * getHeatCapacity();
+    }
+
+    /**
      * Gets the maximum temperature this node can withstand before failure.
      * 
      * @return Maximum safe temperature
      */
-    double getMaxTemperature();
+    default double getMaxTemperature() {
+        return 1000.0;
+    }
 
     /**
      * Gets the minimum temperature this node can withstand before failure.
      * 
      * @return Minimum safe temperature
      */
-    double getMinTemperature();
+    default double getMinTemperature() {
+        return -50.0;
+    }
+
+    /**
+     * Gets the resistance to heat transfer.
+     * 
+     * Higher values mean slower heat transfer.
+     * 
+     * @return Heat resistance (0.0 to 1.0)
+     */
+    default double getHeatResistance() {
+        return 0.5;
+    }
+
+    /**
+     * Gets the conductivity modifier of this node.
+     * 
+     * Acts as a multiplier on the heat transfer rate.
+     * 
+     * @return Conductivity modifier (0.0 to 1.0, 1.0 = no modification)
+     */
+    default double getConductivityModifier() {
+        return 1.0;
+    }
 
     /**
      * Applies a heat delta to this node.
      * 
      * @param delta Heat to add (positive) or remove (negative) in HU
      */
-    default void applyHeatDelta(double delta) {
-        double newTemp = getTemperature() + (delta / getHeatCapacity());
-        newTemp = Math.max(getMinTemperature(), Math.min(getMaxTemperature(), newTemp));
-        setTemperature(newTemp);
-    }
+    void applyHeatDelta(double delta);
 
     /**
-     * Gets the current heat content of this node.
+     * Gets the maximum heat this node can store.
      * 
-     * @return Heat content in HU
+     * @return Maximum heat capacity in HU
      */
-    default double getHeatContent() {
-        return getTemperature() * getHeatCapacity();
+    default double getMaxHeat() {
+        return getHeatCapacity() * getMaxTemperature();
     }
 
     /**

@@ -1,20 +1,27 @@
 package com.industrium.core.common.rotation.blockentity;
 
 import com.industrium.core.api.network.IRotationNode;
+import com.industrium.core.api.network.SystemType;
 import com.industrium.core.common.blockentity.BaseMachineBlockEntity;
 import com.industrium.core.Industrium;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEntity implements IRotationNode {
-    protected double rpm;
-    protected double torque;
+    protected double rpm = 0.0;
+    protected double torque = 0.0;
     protected long networkId = -1;
 
     public BaseRotationMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+    }
+
+    @Override
+    public SystemType getSystemType() {
+        return SystemType.ROTATION;
     }
 
     @Override
@@ -35,6 +42,11 @@ public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEnt
     @Override
     public void setTorque(double torque) {
         this.torque = torque;
+    }
+
+    @Override
+    public Level getLevel() {
+        return level;
     }
 
     @Override
