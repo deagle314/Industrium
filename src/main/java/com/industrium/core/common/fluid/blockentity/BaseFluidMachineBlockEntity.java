@@ -116,7 +116,8 @@ public abstract class BaseFluidMachineBlockEntity extends BaseMachineBlockEntity
      * @param fluid The fluid to check
      * @return true if compatible
      */
-    protected boolean canHold(FluidStack fluid) {
+    @Override
+    public boolean canHold(FluidStack fluid) {
         return fluidStack.isEmpty() || fluidStack.isFluidEqual(fluid);
     }
 
