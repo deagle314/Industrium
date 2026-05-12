@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEntity implements IRotationNode {
     protected double rpm = 0.0;
     protected double torque = 0.0;
+    protected double conductivity = 1.0;
     protected long networkId = -1;
 
     public BaseRotationMachineBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -29,7 +30,6 @@ public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEnt
         return rpm;
     }
 
-    @Override
     public void setRPM(double rpm) {
         this.rpm = rpm;
     }
@@ -39,9 +39,23 @@ public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEnt
         return torque;
     }
 
-    @Override
     public void setTorque(double torque) {
         this.torque = torque;
+    }
+
+    @Override
+    public double getConductivity() {
+        return conductivity;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0.0;
+    }
+
+    @Override
+    public double getInertia() {
+        return 1.0;
     }
 
     @Override

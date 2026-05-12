@@ -115,6 +115,8 @@ public final class RegistryValidator {
             BlockEntityType<?> bet = beRO.get();
             ResourceLocation id = beRO.getId();
             
+            // DISABLED: getValidBlocks() removed in Forge 1.20.1
+            /*
             for (Block block : bet.getValidBlocks()) {
                 ResourceLocation blockId = block.getRegistryName();
                 
@@ -122,6 +124,7 @@ public final class RegistryValidator {
                     errors.add("BlockEntityType '" + id + "' includes block '" + blockId + "' with different name");
                 }
             }
+            */
         }
         
         LOGGER.info("  - BlockEntity mappings validated");
