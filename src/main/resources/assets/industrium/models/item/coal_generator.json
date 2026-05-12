@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "industrium:item/coal_generator"
-  }
+  "parent": "industrium:block/coal_generator"
 }

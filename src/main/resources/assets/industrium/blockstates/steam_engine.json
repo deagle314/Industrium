@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "industrium:block/steam_engine" }
+    "": {
+      "model": "industrium:block/steam_engine"
+    }
   }
 }

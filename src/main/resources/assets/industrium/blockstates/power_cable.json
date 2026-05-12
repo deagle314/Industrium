@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "industrium:block/power_cable" }
+    "": {
+      "model": "industrium:block/power_cable"
+    }
   }
 }

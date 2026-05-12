@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "industrium:item/battery_box"
-  }
+  "parent": "industrium:block/battery_box"
 }

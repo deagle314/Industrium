@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "industrium:block/coal_generator" }
+    "": {
+      "model": "industrium:block/coal_generator"
+    }
   }
 }
