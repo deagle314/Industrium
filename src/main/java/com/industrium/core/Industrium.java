@@ -12,6 +12,7 @@ import com.industrium.core.api.network.IRotationNode;
 import com.industrium.core.common.registry.RegistryBootstrap;
 import com.industrium.core.common.util.RegistryValidator;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Industrium.MOD_ID)
@@ -36,7 +37,10 @@ public class Industrium {
             FMLJavaModLoadingContext.get().getModEventBus()
         );
 
-        // Run validation suite
-        RegistryValidator.validate();
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+    }
+
+    private void setup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(RegistryValidator::validate);
     }
 }

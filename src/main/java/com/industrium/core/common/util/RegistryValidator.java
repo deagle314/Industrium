@@ -69,6 +69,10 @@ public final class RegistryValidator {
                 .collect(Collectors.toSet());
         
         for (RegistryObject<Block> blockRO : ModRegistry.BLOCKS.getEntries()) {
+            if (!blockRO.isPresent()) {
+                errors.add("Block registry object is not present: " + blockRO.getId());
+                continue;
+            }
             ResourceLocation id = blockRO.getId();
             Block block = blockRO.get();
             
@@ -85,6 +89,10 @@ public final class RegistryValidator {
         }
         
         for (RegistryObject<?> beRO : ModRegistry.BLOCK_ENTITIES.getEntries()) {
+            if (!beRO.isPresent()) {
+                errors.add("BlockEntity registry object is not present: " + beRO.getId());
+                continue;
+            }
             ResourceLocation id = beRO.getId();
             if (!blockIds.contains(id)) {
                 errors.add("BlockEntity '" + id + "' has no matching Block registered");
@@ -92,6 +100,10 @@ public final class RegistryValidator {
         }
         
         for (RegistryObject<Item> itemRO : ModRegistry.ITEMS.getEntries()) {
+            if (!itemRO.isPresent()) {
+                errors.add("Item registry object is not present: " + itemRO.getId());
+                continue;
+            }
             ResourceLocation id = itemRO.getId();
             Item item = itemRO.get();
             
@@ -112,6 +124,10 @@ public final class RegistryValidator {
         LOGGER.info("[2/5] Checking BlockEntity type mappings...");
         
         for (RegistryObject<BlockEntityType<?>> beRO : ModRegistry.BLOCK_ENTITIES.getEntries()) {
+            if (!beRO.isPresent()) {
+                errors.add("BlockEntity registry object is not present: " + beRO.getId());
+                continue;
+            }
             BlockEntityType<?> bet = beRO.get();
             ResourceLocation id = beRO.getId();
             
@@ -156,6 +172,10 @@ public final class RegistryValidator {
         int itemsChecked = 0;
         
         for (RegistryObject<Block> blockRO : ModRegistry.BLOCKS.getEntries()) {
+            if (!blockRO.isPresent()) {
+                warnings.add("Block registry object is not present: " + blockRO.getId());
+                continue;
+            }
             String path = blockRO.getId().getPath();
             blocksChecked++;
             
@@ -165,6 +185,10 @@ public final class RegistryValidator {
         }
         
         for (RegistryObject<Item> itemRO : ModRegistry.ITEMS.getEntries()) {
+            if (!itemRO.isPresent()) {
+                warnings.add("Item registry object is not present: " + itemRO.getId());
+                continue;
+            }
             String path = itemRO.getId().getPath();
             itemsChecked++;
             
@@ -183,17 +207,20 @@ public final class RegistryValidator {
         LOGGER.info("[5/5] Checking creative tab integrity...");
         
         try {
-            RegistryObject<?> tab = ModCreativeTabs.MAIN_TAB;
-            if (tab == null) {
-                errors.add("Creative tab MAIN_TAB is null");
+            if (!ModCreativeTabs.MAIN_TAB.isPresent()) {
+                errors.add("Creative tab MAIN_TAB is not present");
             } else {
-                Block iconBlock = ModBlocks.COAL_GENERATOR.get();
-                if (iconBlock == null) {
-                    errors.add("Creative tab icon block (coal_generator) is null");
+                if (ModBlocks.COAL_GENERATOR.isPresent()) {
+                    Block iconBlock = ModBlocks.COAL_GENERATOR.get();
+                    if (iconBlock == null) {
+                        errors.add("Creative tab icon block (coal_generator) is null despite being present");
+                    }
+                } else {
+                    errors.add("Creative tab icon block (coal_generator) is missing from registry");
                 }
             }
         } catch (Exception e) {
-            errors.add("Creative tab initialization failed: " + e.getMessage());
+            errors.add("Creative tab validation failed: " + e.getMessage());
         }
         
         LOGGER.info("  - Creative tab validated");
