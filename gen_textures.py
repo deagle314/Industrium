@@ -48,7 +48,7 @@ def tank_plate(r, g, b):
             p[y][x] = [50, 55, 60, 255]
     return p
 
-BASE = '/workspace/project/Industrium/src/main/resources/assets/industrium/textures'
+BASE = '/home/engine/project/src/main/resources/assets/industrium/textures'
 os.makedirs(f'{BASE}/block', exist_ok=True)
 os.makedirs(f'{BASE}/item', exist_ok=True)
 os.makedirs(f'{BASE}/gui', exist_ok=True)
@@ -65,6 +65,8 @@ blocks = [
     ('conveyor_basic', 100, 105, 110, 'riveted'),
     ('tank_basic', 110, 110, 115, 'tank'),
     ('steam_boiler', 105, 110, 115, 'riveted'),
+    ('boiler', 105, 110, 115, 'tank'),
+    ('steam_engine', 110, 115, 120, 'riveted'),
     ('assembler', 110, 115, 120, 'riveted'),
     ('ore_washer', 105, 110, 115, 'riveted'),
     ('mixer', 110, 105, 100, 'riveted'),
