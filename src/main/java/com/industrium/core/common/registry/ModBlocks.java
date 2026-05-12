@@ -1,14 +1,59 @@
 package com.industrium.core.common.registry;
 
-import com.industrium.core.common.block.*;
-import com.industrium.core.common.fluid.block.*;
-import com.industrium.core.common.heat.block.*;
-import com.industrium.core.common.info.block.*;
-import com.industrium.core.common.integration.block.*;
-import com.industrium.core.common.logistics.block.*;
-import com.industrium.core.common.machine.block.*;
-import com.industrium.core.common.power.block.*;
-import com.industrium.core.common.rotation.block.*;
+import com.industrium.core.common.fluid.block.BoilerBlock;
+import com.industrium.core.common.fluid.block.CheckValveBlock;
+import com.industrium.core.common.fluid.block.CondenserBlock;
+import com.industrium.core.common.fluid.block.CopperPipeBlock;
+import com.industrium.core.common.fluid.block.ElectricPumpBlock;
+import com.industrium.core.common.fluid.block.FlowMeterBlock;
+import com.industrium.core.common.fluid.block.FluidTankBlock;
+import com.industrium.core.common.fluid.block.ManualValveBlock;
+import com.industrium.core.common.fluid.block.SteelPipeBlock;
+import com.industrium.core.common.heat.block.CoalBurnerBlock;
+import com.industrium.core.common.heat.block.HeatMeterBlock;
+import com.industrium.core.common.heat.block.HeatPipeBlock;
+import com.industrium.core.common.heat.block.InsulatedHeatPipeBlock;
+import com.industrium.core.common.heat.block.RadiatorBlock;
+import com.industrium.core.common.heat.block.SteamBoilerBlock;
+import com.industrium.core.common.heat.block.ThermalBatteryBlock;
+import com.industrium.core.common.heat.block.WaterCoolerBlock;
+import com.industrium.core.common.info.block.CentralConsoleBlock;
+import com.industrium.core.common.info.block.EmergencyStopSwitchBlock;
+import com.industrium.core.common.info.block.IndicatorLampBlock;
+import com.industrium.core.common.info.block.NumericDisplayBlock;
+import com.industrium.core.common.info.block.PowerSensorBlock;
+import com.industrium.core.common.info.block.RelayBoxBlock;
+import com.industrium.core.common.info.block.SignalCableBlock;
+import com.industrium.core.common.info.block.TemperatureSensorBlock;
+import com.industrium.core.common.info.block.ThresholdControllerBlock;
+import com.industrium.core.common.info.block.TimerUnitBlock;
+import com.industrium.core.common.integration.block.HeatExchangerBlock;
+import com.industrium.core.common.integration.block.MotorPumpBlock;
+import com.industrium.core.common.integration.block.SmartBreakerBlock;
+import com.industrium.core.common.integration.block.SteamTurbineBlock;
+import com.industrium.core.common.logistics.block.ConveyorBeltBlock;
+import com.industrium.core.common.logistics.block.CrateBlock;
+import com.industrium.core.common.logistics.block.FastConveyorBeltBlock;
+import com.industrium.core.common.logistics.block.LoaderBlock;
+import com.industrium.core.common.logistics.block.MergerBlock;
+import com.industrium.core.common.logistics.block.SmartSorterBlock;
+import com.industrium.core.common.logistics.block.SplitterBlock;
+import com.industrium.core.common.logistics.block.UnloaderBlock;
+import com.industrium.core.common.logistics.block.VerticalChuteBlock;
+import com.industrium.core.common.logistics.block.WarehouseBinBlock;
+import com.industrium.core.common.machine.block.ElectricFurnaceBlock;
+import com.industrium.core.common.power.block.BatteryBoxBlock;
+import com.industrium.core.common.power.block.CoalGeneratorBlock;
+import com.industrium.core.common.power.block.PowerCableBlock;
+import com.industrium.core.common.rotation.block.BeltPulleyBlock;
+import com.industrium.core.common.rotation.block.ChainDriveBlock;
+import com.industrium.core.common.rotation.block.ClutchBlock;
+import com.industrium.core.common.rotation.block.CrusherBlock;
+import com.industrium.core.common.rotation.block.FlywheelBlock;
+import com.industrium.core.common.rotation.block.GearboxBlock;
+import com.industrium.core.common.rotation.block.MechanicalPumpBlock;
+import com.industrium.core.common.rotation.block.ShaftBlock;
+import com.industrium.core.common.rotation.block.SteamEngineBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -34,7 +79,7 @@ public class ModBlocks {
 
     // Heat
     public static final RegistryObject<Block> COAL_BURNER = ModRegistry.BLOCKS.register("coal_burner", CoalBurnerBlock::new);
-    public static final RegistryObject<Block> ELECTRIC_HEATER = ModRegistry.BLOCKS.register("electric_heater", ElectricHeaterBlock::new);
+    public static final RegistryObject<Block> ELECTRIC_HEATER = ModRegistry.BLOCKS.register("electric_heater", com.industrium.core.common.heat.block.ElectricHeaterBlock::new);
     public static final RegistryObject<Block> HEAT_METER = ModRegistry.BLOCKS.register("heat_meter", HeatMeterBlock::new);
     public static final RegistryObject<Block> HEAT_PIPE = ModRegistry.BLOCKS.register("heat_pipe", HeatPipeBlock::new);
     public static final RegistryObject<Block> INSULATED_HEAT_PIPE = ModRegistry.BLOCKS.register("insulated_heat_pipe", InsulatedHeatPipeBlock::new);
@@ -60,7 +105,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> CHAIN_DRIVE = ModRegistry.BLOCKS.register("chain_drive", ChainDriveBlock::new);
     public static final RegistryObject<Block> CLUTCH = ModRegistry.BLOCKS.register("clutch", ClutchBlock::new);
     public static final RegistryObject<Block> CRUSHER = ModRegistry.BLOCKS.register("crusher", CrusherBlock::new);
-    public static final RegistryObject<Block> ELECTRIC_MOTOR = ModRegistry.BLOCKS.register("electric_motor", ElectricMotorBlock::new);
+    public static final RegistryObject<Block> ELECTRIC_MOTOR = ModRegistry.BLOCKS.register("electric_motor", com.industrium.core.common.rotation.block.ElectricMotorBlock::new);
     public static final RegistryObject<Block> FLYWHEEL = ModRegistry.BLOCKS.register("flywheel", FlywheelBlock::new);
     public static final RegistryObject<Block> GEARBOX = ModRegistry.BLOCKS.register("gearbox", GearboxBlock::new);
     public static final RegistryObject<Block> MECHANICAL_PUMP = ModRegistry.BLOCKS.register("mechanical_pump", MechanicalPumpBlock::new);
@@ -80,8 +125,8 @@ public class ModBlocks {
     public static final RegistryObject<Block> TIMER_UNIT = ModRegistry.BLOCKS.register("timer_unit", TimerUnitBlock::new);
 
     // Integration
-    public static final RegistryObject<Block> INTEGRATION_ELECTRIC_HEATER = ModRegistry.BLOCKS.register("integration_electric_heater", ElectricHeaterBlock::new);
-    public static final RegistryObject<Block> INTEGRATION_ELECTRIC_MOTOR = ModRegistry.BLOCKS.register("integration_electric_motor", ElectricMotorBlock::new);
+    public static final RegistryObject<Block> INTEGRATION_ELECTRIC_HEATER = ModRegistry.BLOCKS.register("integration_electric_heater", com.industrium.core.common.integration.block.ElectricHeaterBlock::new);
+    public static final RegistryObject<Block> INTEGRATION_ELECTRIC_MOTOR = ModRegistry.BLOCKS.register("integration_electric_motor", com.industrium.core.common.integration.block.ElectricMotorBlock::new);
     public static final RegistryObject<Block> HEAT_EXCHANGER = ModRegistry.BLOCKS.register("heat_exchanger", HeatExchangerBlock::new);
     public static final RegistryObject<Block> MOTOR_PUMP = ModRegistry.BLOCKS.register("motor_pump", MotorPumpBlock::new);
     public static final RegistryObject<Block> SMART_BREAKER = ModRegistry.BLOCKS.register("smart_breaker", SmartBreakerBlock::new);
