@@ -5,7 +5,7 @@ import com.industrium.core.api.network.IPowerNode;
 import com.industrium.core.api.network.SystemType;
 import com.industrium.core.api.power.VoltageTier;
 import com.industrium.core.common.machine.AbstractMachineBlockEntity;
-import com.industrium.core.common.registry.PowerModule;
+import com.industrium.core.common.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -21,7 +21,7 @@ public class CableBlockEntity extends AbstractMachineBlockEntity implements IPow
     private long networkId = -1;
     
     public CableBlockEntity(BlockPos pos, BlockState state) {
-        super(PowerModule.POWER_CABLE_BE.get(), pos, state);
+        super(ModBlockEntities.POWER_CABLE.get(), pos, state);
     }
     
     @Override

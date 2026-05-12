@@ -4,7 +4,7 @@ import com.industrium.core.api.power.IEnergyStorage;
 import com.industrium.core.api.power.VoltageTier;
 import com.industrium.core.common.machine.AbstractMachineBlockEntity;
 import com.industrium.core.common.machine.module.EnergyModule;
-import com.industrium.core.common.registry.PowerModule;
+import com.industrium.core.common.registry.ModBlockEntities;
 import com.industrium.core.common.system.MachineStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,7 +18,7 @@ public class BatteryBoxBlockEntity extends AbstractMachineBlockEntity implements
     private final EnergyModule energyModule;
     
     public BatteryBoxBlockEntity(BlockPos pos, BlockState state) {
-        super(PowerModule.BATTERY_BOX_BE.get(), pos, state);
+        super(ModBlockEntities.BATTERY_BOX.get(), pos, state);
         this.energyModule = addModule(new EnergyModule(VoltageTier.LV.getTransferRate() * 10, VoltageTier.LV));
         this.status = MachineStatus.IDLE;
     }

@@ -4,7 +4,7 @@ import com.industrium.core.api.power.IGenerator;
 import com.industrium.core.api.power.VoltageTier;
 import com.industrium.core.common.machine.AbstractMachineBlockEntity;
 import com.industrium.core.common.machine.module.EnergyModule;
-import com.industrium.core.common.registry.PowerModule;
+import com.industrium.core.common.registry.ModBlockEntities;
 import com.industrium.core.common.system.MachineStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +23,7 @@ public class CoalGeneratorBlockEntity extends AbstractMachineBlockEntity impleme
     private boolean isBurning;
     
     public CoalGeneratorBlockEntity(BlockPos pos, BlockState state) {
-        super(PowerModule.COAL_GENERATOR_BE.get(), pos, state);
+        super(ModBlockEntities.COAL_GENERATOR.get(), pos, state);
         this.energyModule = addModule(new EnergyModule(1000, VoltageTier.LV));
         this.generationRate = VoltageTier.LV.getTransferRate();
         this.fuelRemaining = 0;

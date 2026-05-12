@@ -1,12 +1,12 @@
 package com.industrium.core.common.rotation.blockentity;
 
-import com.industrium.core.common.registry.RotationModule;
+import com.industrium.core.common.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class FlywheelBlockEntity extends BaseRotationMachineBlockEntity {
     public FlywheelBlockEntity(BlockPos pos, BlockState state) {
-        super(RotationModule.FLYWHEEL_BE.get(), pos, state);
+        super(ModBlockEntities.FLYWHEEL.get(), pos, state);
     }
 
     @Override

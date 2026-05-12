@@ -11,7 +11,7 @@ public class ModCreativeTabs {
     public static final RegistryObject<CreativeModeTab> MAIN_TAB = ModRegistry.CREATIVE_MODE_TABS.register("main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.industrium"))
-                    .icon(() -> new ItemStack(PowerModule.COAL_GENERATOR.get()))
+                    .icon(() -> new ItemStack(ModBlocks.COAL_GENERATOR.get()))
                     .displayItems((parameters, output) -> {
                         ModRegistry.ITEMS.getEntries().forEach(itemRO -> {
                             output.accept(itemRO.get());

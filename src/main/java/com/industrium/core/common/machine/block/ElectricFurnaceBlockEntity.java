@@ -6,7 +6,7 @@ import com.industrium.core.common.machine.AbstractMachineBlockEntity;
 import com.industrium.core.common.machine.module.EnergyModule;
 import com.industrium.core.common.machine.module.InventoryModule;
 import com.industrium.core.common.machine.module.ProgressModule;
-import com.industrium.core.common.registry.MachineModule;
+import com.industrium.core.common.registry.ModBlockEntities;
 import com.industrium.core.common.system.MachineStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +24,7 @@ public class ElectricFurnaceBlockEntity extends AbstractMachineBlockEntity imple
     private final ProgressModule progressModule;
     
     public ElectricFurnaceBlockEntity(BlockPos pos, BlockState state) {
-        super(MachineModule.ELECTRIC_FURNACE_BE.get(), pos, state);
+        super(ModBlockEntities.ELECTRIC_FURNACE.get(), pos, state);
         this.energyModule = addModule(new EnergyModule(VoltageTier.LV.getTransferRate() * 10, VoltageTier.LV));
         this.inventoryModule = addModule(new InventoryModule(2));
         this.progressModule = addModule(new ProgressModule());

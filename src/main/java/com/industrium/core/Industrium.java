@@ -9,7 +9,7 @@ import com.industrium.core.api.network.IPowerNode;
 import com.industrium.core.api.network.IHeatNode;
 import com.industrium.core.api.network.IFluidNode;
 import com.industrium.core.api.network.IRotationNode;
-import com.industrium.core.common.registry.ModRegistry;
+import com.industrium.core.common.registry.RegistryBootstrap;
 import com.industrium.core.common.util.RegistryValidator;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -32,7 +32,7 @@ public class Industrium {
         new NetworkManager<>(RotationNetwork::new);
 
     public Industrium() {
-        ModRegistry.register(
+        RegistryBootstrap.register(
             FMLJavaModLoadingContext.get().getModEventBus()
         );
 

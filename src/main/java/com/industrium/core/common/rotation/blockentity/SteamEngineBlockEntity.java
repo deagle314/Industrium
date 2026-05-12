@@ -1,6 +1,6 @@
 package com.industrium.core.common.rotation.blockentity;
 
-import com.industrium.core.common.registry.RotationModule;
+import com.industrium.core.common.registry.ModBlockEntities;
 import com.industrium.core.common.system.MachineStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +26,7 @@ public class SteamEngineBlockEntity extends BaseRotationMachineBlockEntity {
     private static final double MAX_PRESSURE = 100.0;
     
     public SteamEngineBlockEntity(BlockPos pos, BlockState state) {
-        super(RotationModule.STEAM_ENGINE_BE.get(), pos, state);
+        super(ModBlockEntities.STEAM_ENGINE.get(), pos, state);
     }
     
     @Override
