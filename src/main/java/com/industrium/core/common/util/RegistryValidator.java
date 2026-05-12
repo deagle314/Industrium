@@ -187,7 +187,7 @@ public final class RegistryValidator {
             if (tab == null) {
                 errors.add("Creative tab MAIN_TAB is null");
             } else {
-                Block iconBlock = PowerModule.COAL_GENERATOR.get();
+                Block iconBlock = ModBlocks.COAL_GENERATOR.get();
                 if (iconBlock == null) {
                     errors.add("Creative tab icon block (coal_generator) is null");
                 }
