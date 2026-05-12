@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "industrium:block/electric_furnace" }
+    "": {
+      "model": "industrium:block/electric_furnace"
+    }
   }
 }

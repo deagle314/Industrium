@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "industrium:block/heat_meter"
+    }
+  }
+}

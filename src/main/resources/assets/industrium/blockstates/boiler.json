@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": { "model": "industrium:block/boiler" }
+    "": {
+      "model": "industrium:block/boiler"
+    }
   }
 }
