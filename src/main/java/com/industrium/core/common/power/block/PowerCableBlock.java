@@ -1,4 +1,4 @@
-package com.industrium.core.common.block;
+package com.industrium.core.common.power.block;
 
 import com.industrium.core.common.power.blockentity.CableBlockEntity;
 import net.minecraft.core.BlockPos;

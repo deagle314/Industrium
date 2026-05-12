@@ -1,4 +1,4 @@
-package com.industrium.core.common.block;
+package com.industrium.core.common.power.block;
 
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.SoundType;
