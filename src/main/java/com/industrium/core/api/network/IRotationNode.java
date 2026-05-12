@@ -16,6 +16,13 @@ public interface IRotationNode extends IIndustriumNode, IPhysicalNode {
     double getRPM();
 
     /**
+     * Sets the current rotational speed in RPM.
+     * 
+     * @param rpm Rotations per minute
+     */
+    void setRPM(double rpm);
+
+    /**
      * Gets the current net torque applied to this node.
      * 
      * @return Torque in N*m (Newtons per meter)

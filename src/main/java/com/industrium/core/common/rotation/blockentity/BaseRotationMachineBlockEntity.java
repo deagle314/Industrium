@@ -30,6 +30,7 @@ public abstract class BaseRotationMachineBlockEntity extends BaseMachineBlockEnt
         return rpm;
     }
 
+    @Override
     public void setRPM(double rpm) {
         this.rpm = rpm;
     }
